@@ -28,7 +28,7 @@ PUBLIC	void	cstart(){
 	dis_pos = 0;
 
 	// 中断重入控制初始化
-	k_reenter = -1;
+	k_reenter = 0;
 
 	// char *strng = "123\n456\n789";
 	// display_str_colorful(strng, 0x74);

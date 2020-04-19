@@ -5,6 +5,7 @@
 extern	irq_table
 extern	k_reenter
 extern  STACKTOP
+extern	proc_table
 
 ; 函数
 extern	hwint_handler
@@ -14,10 +15,14 @@ extern  disableIRQ
 extern  enableIRQ
 extern  sendEOI2Master
 extern  sendEOI2Slave
+extern	display_str_colorful
 
 [section .text]
 align   32
 [bits   32]
+
+sss		db 	"B"
+		db	0
 
 ; 硬件中断
 global	hwint00
@@ -54,11 +59,37 @@ saveregs:
 	mov		eax, [k_reenter]
 	inc		eax
 	mov		[k_reenter], eax
-	cmp		eax, 0
+	cmp		eax, 1
 	jg		.re_irq
 	mov		esp, STACKTOP
-.re_irq:
+	push	restart
 	jmp		[ebp + RETADDR_OFF]
+.re_irq:
+	push	re_enter
+	jmp		[ebp + RETADDR_OFF]
+
+; 切换回进程
+restart:
+	mov	esp, proc_table
+	pop	gs
+	pop	fs
+	pop	es
+	pop	ds
+	popad
+	add	esp, 4
+
+	dec	dword [k_reenter]
+	iretd
+
+re_enter:
+	pop	gs
+	pop	fs
+	pop	es
+	pop	ds
+	popad
+	add	esp, 4
+	dec	dword [k_reenter]
+	iretd
 
 hwint00:
     irq_master  0

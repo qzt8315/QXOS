@@ -40,6 +40,8 @@ csinit:
 	; 新建进程
 	call	init_proc
 
+	;int 	20h
+
 	; 转跳新进程
 	mov	ax, 0x20
 	ltr	ax

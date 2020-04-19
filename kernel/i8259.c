@@ -23,6 +23,6 @@ void	init8259(){
 	out_byte(INT_S_PORT1, 0x01);
 
 	// OCW1
-	out_byte(INT_M_PORT1, 0xff);
+	out_byte(INT_M_PORT1, 0xfe);
 	out_byte(INT_S_PORT1, 0xff);
 }

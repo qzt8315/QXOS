@@ -11,8 +11,11 @@ RETADDR_OFF equ 48
     push    %1
     call    disableIRQ
     call    sendEOI2Master
+    sti
     call    hwint_handler
     call    enableIRQ
+    add     esp, 4
+    ret
 %endmacro
 
 %macro  irq_slave   1
@@ -20,6 +23,9 @@ RETADDR_OFF equ 48
     push    %1
     call    disableIRQ
     call    sendEOI2Slave
+    sti
     call    hwint_handler
     call    enableIRQ
+    add     esp, 4
+    ret
 %endmacro

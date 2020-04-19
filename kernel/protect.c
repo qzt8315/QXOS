@@ -92,6 +92,7 @@ PUBLIC void exception_handler(u32 int_no, u32 error_code, u32 eip, u32 cs, u32 e
 		uint2str(error_code, int_str);
 		display_str_colorful(int_str, char_color);
 	}
+	display_str_colorful("\n", char_color);
 }
 
 PUBLIC void hwint_handler(u32 hwint_no){
@@ -102,6 +103,7 @@ PUBLIC void hwint_handler(u32 hwint_no){
 	display_str_colorful("hwint no:", char_color);
 	uint2str(hwint_no, hwint_str);
 	display_str_colorful(hwint_str, char_color);
+	display_str_colorful("\n", char_color);
 }
 
 // 初始化中断描述符
@@ -193,7 +195,7 @@ PUBLIC	void init_prot(){
 			hwint08,			PRIVILEGY_KRL);
 	init_idt_desc(INT_VECTOR_IRQ8 + 1,		DA_386IGate,
 			hwint09,			PRIVILEGY_KRL);
-	init_idt_desc(INT_VECTOR_IRQ0 + 2,		DA_386IGate,
+	init_idt_desc(INT_VECTOR_IRQ8 + 2,		DA_386IGate,
 			hwint10,			PRIVILEGY_KRL);
 	init_idt_desc(INT_VECTOR_IRQ8 + 3,		DA_386IGate,
 			hwint11,			PRIVILEGY_KRL);
@@ -232,13 +234,13 @@ PUBLIC	void	sendEOI2Slave(){
 PUBLIC	void	disableIRQ(u8 irq){
 	u8 bmask;
 	if(irq < 8){
-		bmask = in_byte(INT_M_PORT0);
-		bmask = bmask & (~(1 << irq));
-		out_byte(INT_M_PORT0, bmask);
+		bmask = in_byte(INT_M_PORT1);
+		bmask = bmask | (1 << irq);
+		out_byte(INT_M_PORT1, bmask);
 	}else{
-		bmask = in_byte(INT_S_PORT0);
-		bmask = bmask & (~(1 << (irq-8)));
-		out_byte(INT_S_PORT0, bmask);
+		bmask = in_byte(INT_S_PORT1);
+		bmask = bmask | (1 << (irq-8));
+		out_byte(INT_S_PORT1, bmask);
 	}
 }
 
@@ -246,12 +248,12 @@ PUBLIC	void	disableIRQ(u8 irq){
 PUBLIC	void	enableIRQ(u8 irq){
 	u8 bmask;
 	if(irq < 8){
-		bmask = in_byte(INT_M_PORT0);
-		bmask = bmask | (1 << irq);
-		out_byte(INT_M_PORT0, bmask);
+		bmask = in_byte(INT_M_PORT1);
+		bmask = bmask ^ (1 << irq);
+		out_byte(INT_M_PORT1, bmask);
 	}else{
-		bmask = in_byte(INT_S_PORT0);
-		bmask = bmask | (1 << (irq-8));
-		out_byte(INT_S_PORT0, bmask);
+		bmask = in_byte(INT_S_PORT1);
+		bmask = bmask ^ (1 << (irq-8));
+		out_byte(INT_S_PORT1, bmask);
 	}
 }
