@@ -33,5 +33,8 @@ PUBLIC	void	cstart(){
 	// char *strng = "123\n456\n789";
 	// display_str_colorful(strng, 0x74);
 	init_prot();
+
+	//初始化多进程
+	init_multiproc();
 }
 

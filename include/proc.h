@@ -30,4 +30,7 @@ typedef	struct	s_proc{
 	char		p_name[16];
 } PROCESS;
 
+PUBLIC  void    init_multiproc();
+PUBLIC  void    set_TSS_stack_ring0(u32 ss0, u32 esp0);
+
 #endif

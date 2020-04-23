@@ -8,11 +8,13 @@ SELECTOR_KERNEL_CS	equ	8
 extern	cstart
 extern	gdt_ptr
 extern	idt_ptr
+extern	k_reenter
 
 extern	kernel_main
 
 extern	init_proc
 extern	proc_table
+extern	restart
 
 ; 内核栈
 [section .bss]
@@ -26,6 +28,7 @@ align   32
 [bits   32]
 
 global	_start
+global	load_tss
 
 _start:
 	mov	esp, STACKTOP
@@ -43,16 +46,21 @@ csinit:
 	;int 	20h
 
 	; 转跳新进程
-	mov	ax, 0x20
-	ltr	ax
+	push	TSS_SELECTOR
+	call	load_tss
+	add		esp, 4
 	mov	ax, 0x28
 	lldt	ax
-	mov	esp, proc_table
-	pop	gs
-	pop	fs
-	pop	es
-	pop	ds
-	popad
-	add	esp, 4
-	iretd
+	inc 	dword [k_reenter]
+	jmp		restart
 	jmp	$
+
+; void	load_tss(u16 gdt_selector)
+load_tss:
+	ltr	word [esp+4]
+	ret
+
+; void	load_ldt(u16 gdt_selector)
+load_ldt:
+	lldt	word [esp+4]
+	ret

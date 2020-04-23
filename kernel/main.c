@@ -11,13 +11,14 @@ void	TestA();
 // 为新线程创建做准备
 PUBLIC	void	init_proc(){
 	// 初始化TSS段
-	init_desc(&gdt[INDEX_TSS], &proc_tss, sizeof(TSS) - 1, DA_386TSS, PRIVILEGY_TASK);
+	// init_desc(&gdt[INDEX_TSS], &proc_tss, sizeof(TSS) - 1, DA_386TSS, PRIVILEGY_TASK);
 	
 	// 初始化TSS
-	TSS* p_tss	= &proc_tss;
-	p_tss->ss0	= Selector_Data;
-	p_tss->esp0	= &(proc_table->ldt_sel);
-	p_tss->io_base	= sizeof(TSS);
+	//TSS* p_tss	= &proc_tss;
+	set_TSS_stack_ring0(Selector_Data, &(proc_table->ldt_sel));
+	//p_tss->ss0	= Selector_Data;
+	//p_tss->esp0	= &(proc_table->ldt_sel);
+	//p_tss->io_base	= sizeof(TSS);
 	
 	// 初始化进程表
 	PROCESS* process = proc_table;
