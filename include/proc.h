@@ -24,9 +24,9 @@ typedef	struct	s_stack_frame{
 
 typedef	struct	s_proc{
 	STACK_FRAME	regs;
-	u16		ldt_sel;
+	u16			ldt_sel;
 	DESCRIPTOR	ldts[LDT_SIZE];
-	u32		pid;
+	u32			pid;
 	char		p_name[16];
 } PROCESS;
 
