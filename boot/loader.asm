@@ -305,7 +305,7 @@ SUCCESS:
 
 	; 进入保护模式并启用分页
 	mov	eax, cr0
-	or	eax, 0x8001
+	or	eax, 0x80008001
 	mov	cr0, eax
 
 	; 切换到分段
