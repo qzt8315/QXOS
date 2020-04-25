@@ -69,6 +69,7 @@
 // 特权级
 #define	PRIVILEGY_KRL	0
 #define	PRIVILEGY_TASK	1
+#define	PRIVILEGY_USER	3
 
 #define	DA_C		0x98
 #define	DA_DRW		0x92

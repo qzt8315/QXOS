@@ -7,6 +7,7 @@
 #include "proto.h"
 void display_str_colorful(char *str, u8 color);
 void	TestA();
+unsigned int	get_ticks();
 
 // 为新线程创建做准备
 PUBLIC	void	init_proc(){
@@ -41,6 +42,7 @@ PUBLIC	void	init_proc(){
 }
 
 void	TestA(){
+	get_ticks();
 	while(1){
 		display_str_colorful("A", 0x0f);
 		delay(1);

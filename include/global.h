@@ -26,3 +26,6 @@ EXTERN int_handler irq_table[IRQ_NUM];
 
 // 中断重入控制
 EXTERN int  k_reenter;
+
+// 时钟计数
+EXTERN u32  ticks;

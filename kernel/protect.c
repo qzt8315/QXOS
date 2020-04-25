@@ -44,6 +44,9 @@ void	hwint13();
 void	hwint14();
 void	hwint15();
 
+// 系统调用
+void	sys_call();
+
 
 PUBLIC void exception_handler(u32 int_no, u32 error_code, u32 eip, u32 cs, u32 eflags){
 	u8 char_color = 0x74;
@@ -207,6 +210,11 @@ PUBLIC	void init_prot(){
 			hwint14,			PRIVILEGY_KRL);
 	init_idt_desc(INT_VECTOR_IRQ8 + 7,		DA_386IGate,
 			hwint15,			PRIVILEGY_KRL);
+
+
+	// 开启系统调用
+	init_idt_desc(0x80,		DA_386IGate,
+			sys_call,			PRIVILEGY_USER);
 }
 
 

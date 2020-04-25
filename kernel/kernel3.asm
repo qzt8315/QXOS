@@ -45,6 +45,7 @@ global	hwint12
 global	hwint13
 global	hwint14
 global	hwint15
+global	saveregs
 
 saveregs:
 	; 保存寄存器的值
@@ -55,15 +56,13 @@ saveregs:
 	push	gs
 
 	; 切换到内核栈
-	mov		ax, ss
-	mov		ds, ax
-	mov		es, ax
+	mov		bx, ss
+	mov		ds, bx
+	mov		es, bx
 	mov		ebp, esp
 
-	mov		eax, [k_reenter]
-	inc		eax
-	mov		[k_reenter], eax
-	cmp		eax, 1
+	inc		dword [k_reenter]
+	cmp		dword [k_reenter], 1
 	jg		.re_irq
 	mov		esp, STACKTOP
 	push	restart
