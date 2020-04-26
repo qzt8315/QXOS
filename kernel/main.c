@@ -42,8 +42,9 @@ PUBLIC	void	init_proc(){
 }
 
 void	TestA(){
-	get_ticks();
+	int a;
 	while(1){
+		a = get_ticks();
 		display_str_colorful("A", 0x0f);
 		delay(1);
 	}

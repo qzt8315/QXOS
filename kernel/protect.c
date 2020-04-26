@@ -98,16 +98,6 @@ PUBLIC void exception_handler(u32 int_no, u32 error_code, u32 eip, u32 cs, u32 e
 	display_str_colorful("\n", char_color);
 }
 
-PUBLIC void hwint_handler(u32 hwint_no){
-	u8 char_color = 0x74;
-
-	char hwint_str[11];
-
-	display_str_colorful("hwint no:", char_color);
-	uint2str(hwint_no, hwint_str);
-	display_str_colorful(hwint_str, char_color);
-	display_str_colorful("\n", char_color);
-}
 
 // 初始化中断描述符
 PUBLIC	int init_idt_desc(int int_no, u8 desc_type, int_handler handler, u8 privilege){

@@ -1,6 +1,6 @@
 ; 需要汇编调用的地方
 
-_NR_GET_TICKS equ 383
+_NR_GET_TICKS equ 0
 INT_VECTOR_SYS_CALL equ 0x80
 [section .text]
 
