@@ -1,7 +1,7 @@
 # makefile for kernel
 
 # kernel entry point
-KRLENTRYPOINT		= 0x30400
+KRLENTRYPOINT		= 0x100400
 
 #
 KRLENTRYOFFSET		= 0x400
