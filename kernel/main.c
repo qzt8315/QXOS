@@ -5,9 +5,8 @@
 #include "proc.h"
 #include "global.h"
 #include "proto.h"
-void display_str_colorful(char *str, u8 color);
-void	TestA();
-unsigned int	get_ticks();
+void 			display_str_colorful(char *str, u8 color);
+void			TestA();
 
 // 为新线程创建做准备
 PUBLIC	void	init_proc(){
@@ -46,6 +45,6 @@ void	TestA(){
 	while(1){
 		a = get_ticks();
 		display_str_colorful("A", 0x0f);
-		delay(1);
+		delay_ms(10);
 	}
 }

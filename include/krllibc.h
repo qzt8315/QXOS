@@ -10,4 +10,7 @@ PUBLIC	int	Memcpy(void* pDst, void* pSrc, int len);
 // 内存设值
 PUBLIC	int	Memset(void* s,int ch, int n);
 
+// 毫秒级延迟
+void 	delay_ms(int ms);
+
 #endif

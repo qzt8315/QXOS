@@ -4,6 +4,7 @@
 #include "protect.h"
 #include "proc.h"
 #include "global.h"
+#include "proto.h"
 
 // 32位无符号整形转字符串(16进制)
 PUBLIC	int	uint2str(u32 num, char *str){
@@ -31,13 +32,16 @@ PUBLIC	int	uint2str(u32 num, char *str){
 	return 0;
 }
 
-PUBLIC	void 	delay(int n){
-	int i,j,k;
-	for(i=0; i<n; i++){
-		for(j=0; j<1000; j++){
-			for(k=0; k<1000; k++){ }
-		}
-	}
+// 毫秒级延迟
+PUBLIC	void 	delay_ms(int ms){
+	// int i,j,k;
+	// for(i=0; i<n; i++){
+	// 	for(j=0; j<1000; j++){
+	// 		for(k=0; k<1000; k++){ }
+	// 	}
+	// }
+	int	t = get_ticks()+(ms+COLOCK_DUR-1)/COLOCK_DUR;
+	while(get_ticks() < t){}
 }
 
 // 复制内存

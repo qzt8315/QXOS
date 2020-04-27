@@ -9,4 +9,8 @@ u8 in_byte(u16 port);
 
 // 打印彩色字符串
 void display_str_colorful(char *str, u8 color);
+
+// 系统调用
+// 获取时钟中断计数
+unsigned int	get_ticks();
 #endif
