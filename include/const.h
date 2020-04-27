@@ -23,4 +23,10 @@
 
 #define IRQ_NUM     16
 
+// 8253时钟频率
+#define FREQUENCE_8253  1193180L
+
+// 时钟中断间隔时间，单位毫秒
+#define COLOCK_DUR  10
+
 #endif

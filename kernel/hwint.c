@@ -5,6 +5,7 @@
 #include "protect.h"
 #include "proc.h"
 #include "global.h"
+#include "hwint.h"
 
 PRIVATE void hwint_handler_clock();
 
@@ -30,4 +31,11 @@ PUBLIC void hwint_handler(u32 hwint_no){
 
 void hwint_handler_clock(){
     ticks++;
+}
+
+void init_8253(){
+	u16 counter0 = (u16)(FREQUENCE_8253/(1000/COLOCK_DUR));
+	out_byte(_8253_MODE_PORT, _8253_WRITE_COUNTER0);
+	out_byte(_8253_COUNTER0_PORT, (u8)(counter0&&0x00ff));
+	out_byte(_8253_COUNTER0_PORT, (u8)((counter0>>8)&&0x00ff));
 }

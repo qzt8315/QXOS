@@ -46,6 +46,8 @@ void	hwint15();
 
 // 系统调用
 void	sys_call();
+// 
+void	init_8253();
 
 
 PUBLIC void exception_handler(u32 int_no, u32 error_code, u32 eip, u32 cs, u32 eflags){
@@ -112,6 +114,7 @@ PUBLIC	int init_idt_desc(int int_no, u8 desc_type, int_handler handler, u8 privi
 
 PUBLIC	void init_prot(){
 	init8259();
+	init_8253();
 	
 	// 异常
 	
