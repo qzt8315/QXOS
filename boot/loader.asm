@@ -32,7 +32,7 @@ ARDS_CNT:	dw	0
 MEM_SIZE:	dd	0
 
 LOAD_START:
-	; 找到loader，加载到32K的地址的位置，并将控制权交给loader
+	; 找到kernel，加载到0x90000的地址的位置，并将控制权交给kernel
 	mov	ax, cs
 	mov	ds, ax
 	mov	es, ax
@@ -109,7 +109,7 @@ LOAD_LOADER:
 	mov	cx, 3
 save_info:
 	push	word [es:edi]
-	sub	edi, 2
+	sub		edi, 2
 	loop	save_info
 	
 	mov	bp, sp
@@ -633,20 +633,25 @@ START_32:
 	mov	eax, dword [edi + ELF_PROGRAM_HEADER_OFFSET_OFF]
 	add	eax, KERNEL_LOAD_ADDR_PHY
 	push	eax
-	push	dword [edi + ELF_PROGRAM_HEADER_VADDR_OFF]
+	mov		eax, dword [edi + ELF_PROGRAM_HEADER_VADDR_OFF]
+	add		eax, K_P_BASE_ADDR
+	sub		eax, K_V_BASE_ADDR
+	push	eax
 	call	memcpy
-	add	esp, 12
-	add	edi, edx
+	add		esp, 12
+	add		edi, edx
 	loop	.loop_reaf_progam_header
 
 	
 	push	STR1_32_LEN
 	push	STR1_32
 	call	SHOW_STR_32
-	add	esp, 8
+	add		esp, 8
 
-	pop	eax
-	
+	pop		eax
+	add		eax, K_P_BASE_ADDR
+	sub		eax, K_V_BASE_ADDR
+
 	jmp	eax
 
 ; 保护模式下的字符串显示,并换行

@@ -20,6 +20,17 @@ SECS_PER_TRK	equ	0x12
 ; 驱动器号
 DRV_NUM		equ	0
 ; 加载地址 48K 长度8K; FAT表加载到40K的位置，长度8k
+;		Memory
+;	---------0x7c00
+;	引导扇区(512字节)
+;	---------0x8000 32K
+;	根目录加载区
+;	---------0xa000 40K
+;	FAT表
+;	---------0xc000	48K
+;	loader.bin
+;	---------0x90000 576K
+;	kernel.bin
 LOAD_ADR_BASE		equ	0
 LOAD_ADR_OFF		equ	0x8000
 LOAD_FAT_ADR_OFF	equ	0xa000
@@ -154,3 +165,8 @@ DA_CR		equ	0x9a
 
 ; DPL
 DA_DPL3		equ	60h
+
+; 内核实际加载基址 1M
+K_P_BASE_ADDR	equ	0x100000
+; 内核空间虚拟地址基址 3G
+K_V_BASE_ADDR	equ	0xc0000000
