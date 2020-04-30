@@ -3,6 +3,7 @@
 # kernel entry point
 # KRLENTRYPOINT		= 0x100400
 KRLENTRYPOINT		= 0xc0000400
+LINKSCRIPT			= kernel.ld
 
 #
 KRLENTRYOFFSET		= 0x400
@@ -15,7 +16,7 @@ LD			= ld
 ASMBFLAGS		= -I boot/include/
 ASMKFLAGS		= -I include/ -f elf
 CFLAGS			= -I include/ -m32 -c -fno-builtin
-LDFLAGS			= -s -m elf_i386 -Ttext $(KRLENTRYPOINT)
+LDFLAGS			= -s -m elf_i386 -T$(LINKSCRIPT)
 DASMFLAGS		= -u -o $(KRLENTRYPOINT) -e $(KRLENTRYOFFSET)
 
 # This Program

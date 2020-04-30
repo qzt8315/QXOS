@@ -31,8 +31,8 @@ global	_start
 global	load_tss
 
 _start:
-	mov	esp, STACKTOP
-	sgdt	[gdt_ptr]
+	mov		esp, V2P(STACKTOP)
+	sgdt	[V2P(gdt_ptr)]
 	call	cstart
 	lgdt	[gdt_ptr]
 	lidt	[idt_ptr]
