@@ -10,12 +10,20 @@ typedef struct s_ards
     u32 LengthLow;
     u32 LengthHigh;
     u32 type;
-    #define OS_USEFUL   1;      // 可被操作系统使用的RAM
-    #define USED_OR_PR  2;      // 已使用或系统保留，不能使用
+    #define OS_USEFUL   1       // 可被操作系统使用的RAM
+    #define USED_OR_PR  2       // 已使用或系统保留，不能使用
     // 其他 未定义
 } ARDS;
 
 #define ARDS_SIZE   20
 
+
+// 空闲内存块
+typedef struct s_memFreeBlock
+{
+    struct s_memFreeBlock*   pre;
+    struct s_memFreeBlock*   next;
+    u32             length;
+} MEMFREEBLOCK;
 
 #endif

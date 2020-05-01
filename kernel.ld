@@ -7,6 +7,8 @@
 
 ENTRY(_start)
 SECTIONS {
+    . = 0xc0000000;
+    _kstart = .;
     . = 0xc0000400;
     .text : {
         *(.text)
@@ -33,5 +35,5 @@ SECTIONS {
     }
 
     . = ALIGN(4);
-    _end = .;
+    _kend = .;
 }

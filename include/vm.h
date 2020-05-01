@@ -12,9 +12,11 @@
 #define N_4K                0x1000
 
 // 虚拟地址转物理地址
-#define V2P(addr)       (addr+K_P_BASE_ADDR-K_V_BASE_ADDR)
+#define V2P(addr)       ((void*)addr+K_P_BASE_ADDR-K_V_BASE_ADDR)
 
 // 4K对齐, 往后对齐
-#define ADDR_4K(addr)   ((addr+N_4K-1)^(N_4K-1))
+#define ADDR_4K_CEIL(addr)      (((u32)addr+N_4K-1)&(~(N_4K-1)))
+// 4K对齐, 往前对齐
+#define ADDR_4K_FLOOR(addr)     ((u32)addr&(~(N_4K-1)))
 
 #endif
