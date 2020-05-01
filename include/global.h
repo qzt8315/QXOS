@@ -4,6 +4,12 @@
 #define	EXTERN
 #endif
 
+#include "type.h"
+#include "const.h"
+#include "mem.h"
+#include "protect.h"
+#include "proc.h"
+
 // gdt
 EXTERN	u8		gdt_ptr[6];
 EXTERN	DESCRIPTOR	gdt[GDT_SIZE];
@@ -29,3 +35,9 @@ EXTERN int  k_reenter;
 
 // 时钟计数
 EXTERN u32  ticks;
+
+// ARDS
+EXTERN ARDS*    p_ards;
+
+// ARDS数量
+EXTERN u8       n_ards;

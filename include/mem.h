@@ -15,5 +15,7 @@ typedef struct s_ards
     // 其他 未定义
 } ARDS;
 
+#define ARDS_SIZE   20
+
 
 #endif

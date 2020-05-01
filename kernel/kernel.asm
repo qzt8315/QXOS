@@ -15,6 +15,7 @@ extern	kernel_main
 extern	init_proc
 extern	proc_table
 extern	restart
+extern	init_vm
 
 ; 内核栈
 [section .bss]
@@ -34,7 +35,8 @@ global	load_tss
 
 _start:
 	mov		esp, V2P(STACKTOP)
-	sgdt	[V2P(gdt_ptr)]
+	call	init_vm
+	sgdt	[gdt_ptr]
 	call	cstart
 	lgdt	[gdt_ptr]
 	lidt	[idt_ptr]
