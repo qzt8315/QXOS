@@ -23,13 +23,13 @@ Selector_VIDEO	equ		Descriptor_VIDEO - Descriptor_GDT
 
 GDP_PTR:	dw	GDT_LEN - 1
 		dd	0
-; ARDS缓冲区
-MemoryInfoCache:
-	times	MEMORYINFOCACHESIZE	db	0
-; ARDS计数
-ARDS_CNT:	dw	0
-; 物理地址大小
-MEM_SIZE:	dd	0
+; ; ARDS缓冲区
+; MemoryInfoCache:
+; 	times	MEMORYINFOCACHESIZE	db	0
+; ; ARDS计数
+; ARDS_CNT:	dw	0
+; ; 物理地址大小
+; MEM_SIZE:	dd	0
 
 LOAD_START:
 	; 找到kernel，加载到0x90000的地址的位置，并将控制权交给kernel

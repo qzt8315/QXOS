@@ -38,6 +38,11 @@ PROC_LDT_OFF    equ 72
 %endmacro
 
 
+; ARDS大小
+ARDS_SIZE   equ     20
+; ARDS数量
+ARDS_COUNT  equ     20
+
 ; 内核实际加载基址 1M
 K_P_BASE_ADDR	equ	0x100000
 ; 内核空间虚拟地址基址 3G

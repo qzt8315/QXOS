@@ -19,9 +19,11 @@ extern	restart
 ; 内核栈
 [section .bss]
 global	STACKTOP
+global	ARDS_SPACE
 
 STACKSPACE:	resb	STACK_SIZE
 STACKTOP:
+ARDS_SPACE:	resb	ARDS_SIZE*ARDS_COUNT
 
 [section .text]
 align   32
