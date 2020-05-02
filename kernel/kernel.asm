@@ -48,7 +48,7 @@ _start:
 	call	init_vm
 	mov		eax, [V2P(pPDETable)]
 	mov		cr3, eax
-	jmp		8:te
+ 	jmp		8:te
 te:
 	sgdt	[gdt_ptr]
 	call	cstart

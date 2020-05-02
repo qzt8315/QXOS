@@ -115,24 +115,24 @@ void init_vm(){
     *pPDE = V2P(*ph_FreePage);
     *ph_FreePage = (*(FPAGE*)V2P(*ph_FreePage)).next;
     Memset(*pPDE, 0, PAGESIZE);
-    // 从空余的分页中取出一个作为pte表
     PTE* pPTE = NULL;
     // 将内核的物理地址完全与虚拟地址对应
     for(;_4k_pkstart<_4k_pkend; _4k_pkstart += PAGESIZE){
         int indexPDE = PDEINDEX(_4k_pkstart);
         int indexPTE = PTEINDEX(_4k_pkstart);
         PDE*    temppPDE = *pPDE + indexPDE;
-        if(temppPDE->attr == 0 && temppPDE->avail_baselow4 == 0 && temppPDE == 0){
+        if(temppPDE->attr == 0 && temppPDE->avail_baselow4 == 0 && temppPDE->basehigh16 == 0){
             pPTE = V2P(*ph_FreePage);
             *ph_FreePage = (*(FPAGE*)V2P(*ph_FreePage)).next;
             Memset(pPTE, 0, PAGESIZE);
             setPDEBaseAddr(temppPDE, pPTE);
-            setPDEAttr(temppPDE, P);
+            setPDEAttr(temppPDE, P | WR);
         }else{
             pPTE = getPDEBaseAddr(temppPDE);
         }
+        pPTE += indexPTE;
         setPTEBaseAddr(pPTE, _4k_pkstart);
-        setPTEAttr(pPTE, P);
+        setPTEAttr(pPTE, P | WR);
     }
     
     // 将内核的物理地址完全对应到内核空间地址(3G+)
@@ -140,18 +140,19 @@ void init_vm(){
         int indexPDE = PDEINDEX(_4k_vkstart);
         int indexPTE = PTEINDEX(_4k_vkstart);
         PDE*    temppPDE = *pPDE + indexPDE;
-        if(temppPDE->attr == 0 && temppPDE->avail_baselow4 == 0 && temppPDE == 0){
+        if(temppPDE->attr == 0 && temppPDE->avail_baselow4 == 0 && temppPDE->basehigh16 == 0){
             
             pPTE = V2P(*ph_FreePage);
             *ph_FreePage = (*(FPAGE*)V2P(*ph_FreePage)).next;
             Memset(pPTE, 0, PAGESIZE);
             setPDEBaseAddr(temppPDE, pPTE);
-            setPDEAttr(temppPDE, P);
+            setPDEAttr(temppPDE, P | WR);
         }else{
             pPTE = getPDEBaseAddr(temppPDE);
         }
+        pPTE += indexPTE;
         setPTEBaseAddr(pPTE, _4k_pkstart);
-        setPDEAttr(pPTE, P);
+        setPDEAttr(pPTE, P | WR);
     }
 }
 

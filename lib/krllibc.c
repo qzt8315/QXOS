@@ -63,7 +63,7 @@ PUBLIC	int	Memset(void* s,int ch, int n){
 	if((s==NULL)||(n<=0))
 		return	-1;
 	u8 v=(u8)ch;
-	for(i=0; i<n; i++){
+	for(i=0; i<n; i++, p_mem++){
 		*p_mem = v;
 	}
 	return 0;
