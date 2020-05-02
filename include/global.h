@@ -9,6 +9,7 @@
 #include "mem.h"
 #include "protect.h"
 #include "proc.h"
+#include "vm.h"
 
 // gdt
 EXTERN	u8		gdt_ptr[6];
@@ -43,7 +44,10 @@ EXTERN ARDS*    p_ards;
 EXTERN u8       n_ards;
 
 // 内存总空间
-u32     MemTotal;
+EXTERN u32     MemTotal;
 
 // 内存空余总空间
-u32     MemFree;
+EXTERN u32     MemFree;
+
+// 记录第一个空闲的页表
+EXTERN FPAGE*   pFreePage;

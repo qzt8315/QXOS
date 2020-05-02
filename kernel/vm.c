@@ -6,10 +6,12 @@
 #include "proto.h"
 #include "global.h"
 // 初始化内核虚拟内存
-extern void*  _kend;
-extern void*  _kstart; 
-extern ARDS    ARDS_SPACE;
+extern void*    _kend;
+extern void*    _kstart; 
+extern ARDS     ARDS_SPACE;
 extern MEMFREEBLOCK MEMFREEBLOCKSPACE;
+extern PDE      PAGESPACE;
+extern PDE      _EPAGESPACE;
 
 // 初始化内存管理，并从物理地址切换到虚拟地址运行
 void init_vm(){
@@ -67,6 +69,34 @@ void init_vm(){
         }
     }
 
-    // 建立
+    // 建立内核空间映射
+    // 内核空间4K对齐
+    // 虚拟地址
+    u32 _4k_vkstart = ADDR_4K_FLOOR(&_kstart);
+    u32 _4k_vkend   = ADDR_4K_CEIL(&_kend);
+    // 物理地址
+    u32 _4k_pkstart = ADDR_4K_FLOOR(V2P(&_kstart));
+    u32 _4k_pkend   = ADDR_4K_CEIL(V2P(&_kend));
 
+    // 初始化所有分页
+    void*   p_pageStart = ADDR_4K_CEIL(V2P(&PAGESPACE));
+    void*   p_pageEnd   = ADDR_4K_FLOOR(V2P(&_EPAGESPACE));
+    // 这里记录的是虚拟地址
+    FPAGE*  pre_fp      = NULL; 
+    // 这里使用物理地址
+    FPAGE*  temp_fp     = NULL;
+    //
+    FPAGE** ph_FreePage = V2P(&pFreePage);
+    for(;p_pageStart<p_pageEnd; p_pageStart+=sizeof(PDE)){
+        temp_fp = p_pageStart;
+        temp_fp->pre = pre_fp;
+        temp_fp->next = NULL;
+        temp_fp = P2V(temp_fp);
+        if(pre_fp == NULL){
+            ph_FreePage = temp_fp;
+        }else{
+            ((FPAGE*)V2P(pre_fp))->next = temp_fp;
+        }
+        pre_fp = temp_fp;
+    }
 }
