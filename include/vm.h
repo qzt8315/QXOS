@@ -12,14 +12,14 @@
 #define N_4K                0x1000
 
 // 虚拟地址转物理地址
-#define V2P(addr)       ((void*)addr+K_P_BASE_ADDR-K_V_BASE_ADDR)
+#define V2P(addr)       ((void*)(addr)+K_P_BASE_ADDR-K_V_BASE_ADDR)
 // 物理地址转虚拟地址
-#define P2V(addr)       ((void*)addr+K_V_BASE_ADDR-K_P_BASE_ADDR)
+#define P2V(addr)       ((void*)(addr)+K_V_BASE_ADDR-K_P_BASE_ADDR)
 
 // 4K对齐, 往后对齐
-#define ADDR_4K_CEIL(addr)      (((u32)addr+N_4K-1)&(~(N_4K-1)))
+#define ADDR_4K_CEIL(addr)      (((u32)(addr)+N_4K-1)&(~(N_4K-1)))
 // 4K对齐, 往前对齐
-#define ADDR_4K_FLOOR(addr)     ((u32)addr&(~(N_4K-1)))
+#define ADDR_4K_FLOOR(addr)     ((u32)(addr)&(~(N_4K-1)))
 
 typedef struct s_pde
 {
@@ -51,6 +51,13 @@ typedef struct s_fpage
 // 每页数量
 #define PAGEITEMS   1024
 
+// 每页大小
+#define PAGESIZE    N_4K
+
+// 获取PDE表的index
+#define PDEINDEX(addr)  (((u32)(addr) & 0xffc00000)>>22)
+// 获取PTE表的index
+#define PTEINDEX(addr)  (((u32)(addr) & 0x003ff000)>>12)
 
 
 #endif

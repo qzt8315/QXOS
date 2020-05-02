@@ -9,6 +9,7 @@ extern	cstart
 extern	gdt_ptr
 extern	idt_ptr
 extern	k_reenter
+extern	pPDETable
 
 extern	kernel_main
 
@@ -45,6 +46,10 @@ global	load_tss
 _start:
 	mov		esp, V2P(STACKTOP)
 	call	init_vm
+	mov		eax, [V2P(pPDETable)]
+	mov		cr3, eax
+	jmp		8:te
+te:
 	sgdt	[gdt_ptr]
 	call	cstart
 	lgdt	[gdt_ptr]

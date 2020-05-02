@@ -5,6 +5,7 @@
 #include "mem.h"
 #include "proto.h"
 #include "global.h"
+#include "krllibc.h"
 // 初始化内核虚拟内存
 extern void*    _kend;
 extern void*    _kstart; 
@@ -12,6 +13,14 @@ extern ARDS     ARDS_SPACE;
 extern MEMFREEBLOCK MEMFREEBLOCKSPACE;
 extern PDE      PAGESPACE;
 extern PDE      _EPAGESPACE;
+
+// 函数声明
+void    setPDEBaseAddr(PDE* pde, void* addr);
+void    setPDEAttr(PDE* pde, u8 attr);
+void*   getPDEBaseAddr(PDE* pde);
+void    setPTEBaseAddr(PTE* pde, void* addr);
+void*   getPTEBaseAddr(PTE* pte);
+void    setPTEAttr(PTE* pte, u8 attr);
 
 // 初始化内存管理，并从物理地址切换到虚拟地址运行
 void init_vm(){
@@ -87,16 +96,89 @@ void init_vm(){
     FPAGE*  temp_fp     = NULL;
     //
     FPAGE** ph_FreePage = V2P(&pFreePage);
-    for(;p_pageStart<p_pageEnd; p_pageStart+=sizeof(PDE)){
+    for(;p_pageStart<p_pageEnd; p_pageStart+=sizeof(PDE) * PAGEITEMS){
         temp_fp = p_pageStart;
         temp_fp->pre = pre_fp;
         temp_fp->next = NULL;
         temp_fp = P2V(temp_fp);
         if(pre_fp == NULL){
-            ph_FreePage = temp_fp;
+            *ph_FreePage = temp_fp;
         }else{
             ((FPAGE*)V2P(pre_fp))->next = temp_fp;
         }
         pre_fp = temp_fp;
     }
+
+    // 开始进行内存映射
+    PDE** pPDE = V2P(&pPDETable);
+    // 从空余的分页中取出一个作为pde
+    *pPDE = V2P(*ph_FreePage);
+    *ph_FreePage = (*(FPAGE*)V2P(*ph_FreePage)).next;
+    Memset(*pPDE, 0, PAGESIZE);
+    // 从空余的分页中取出一个作为pte表
+    PTE* pPTE = NULL;
+    // 将内核的物理地址完全与虚拟地址对应
+    for(;_4k_pkstart<_4k_pkend; _4k_pkstart += PAGESIZE){
+        int indexPDE = PDEINDEX(_4k_pkstart);
+        int indexPTE = PTEINDEX(_4k_pkstart);
+        PDE*    temppPDE = *pPDE + indexPDE;
+        if(temppPDE->attr == 0 && temppPDE->avail_baselow4 == 0 && temppPDE == 0){
+            pPTE = V2P(*ph_FreePage);
+            *ph_FreePage = (*(FPAGE*)V2P(*ph_FreePage)).next;
+            Memset(pPTE, 0, PAGESIZE);
+            setPDEBaseAddr(temppPDE, pPTE);
+            setPDEAttr(temppPDE, P);
+        }else{
+            pPTE = getPDEBaseAddr(temppPDE);
+        }
+        setPTEBaseAddr(pPTE, _4k_pkstart);
+        setPTEAttr(pPTE, P);
+    }
+    
+    // 将内核的物理地址完全对应到内核空间地址(3G+)
+    for(_4k_pkstart = ADDR_4K_FLOOR(V2P(&_kstart));_4k_vkstart<_4k_vkend; _4k_pkstart += PAGESIZE, _4k_vkstart += PAGESIZE){
+        int indexPDE = PDEINDEX(_4k_vkstart);
+        int indexPTE = PTEINDEX(_4k_vkstart);
+        PDE*    temppPDE = *pPDE + indexPDE;
+        if(temppPDE->attr == 0 && temppPDE->avail_baselow4 == 0 && temppPDE == 0){
+            
+            pPTE = V2P(*ph_FreePage);
+            *ph_FreePage = (*(FPAGE*)V2P(*ph_FreePage)).next;
+            Memset(pPTE, 0, PAGESIZE);
+            setPDEBaseAddr(temppPDE, pPTE);
+            setPDEAttr(temppPDE, P);
+        }else{
+            pPTE = getPDEBaseAddr(temppPDE);
+        }
+        setPTEBaseAddr(pPTE, _4k_pkstart);
+        setPDEAttr(pPTE, P);
+    }
+}
+
+// 设置PDE基地址
+void    setPDEBaseAddr(PDE* pde, void* addr){
+    u32* p = (u32*)pde;
+    *p     = (ADDR_4K_FLOOR(*p) ^ (*p)) | ADDR_4K_FLOOR(addr);
+}
+
+void    setPDEAttr(PDE* pde, u8 attr){
+    pde->attr |= attr;
+}
+
+void*   getPDEBaseAddr(PDE* pde){
+    return (void*)ADDR_4K_FLOOR(*(u32*)pde);
+}
+
+// 设置PTE基地址
+void    setPTEBaseAddr(PTE* pte, void* addr){
+    u32* p = (u32*)pte;
+    *p     = (ADDR_4K_FLOOR(*p) ^ (*p)) | ADDR_4K_FLOOR(addr);
+}
+
+void*   getPTEBaseAddr(PTE* pte){
+    return (void*)ADDR_4K_FLOOR(*(u32*)pte);
+}
+
+void    setPTEAttr(PTE* pte, u8 attr){
+    pte->attr |= attr;
 }
