@@ -54,3 +54,14 @@ K_V_BASE_ADDR	equ	0xc0000000
 ;     %1+K_P_BASE_ADDR-K_V_BASE_ADDR
 ; %endmacro
 %define V2P(vaddr)   vaddr+K_P_BASE_ADDR-K_V_BASE_ADDR
+
+; 内核虚拟地址空间
+; VKRLADDRSIZE    equ     0x40000000
+VKRLADDRSIZE    equ     (1<<30)
+
+; 4K
+; _4K              equ     0x1000
+_4K             equ     (1<<12)
+
+; 页条目大小
+PAGEITEMSIZE    equ     4

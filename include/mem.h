@@ -21,8 +21,7 @@ typedef struct s_ards
 // 空闲内存块
 typedef struct s_memFreeBlock
 {
-    struct s_memFreeBlock*   pre;
-    struct s_memFreeBlock*   next;
+    u32             baseAddr;
     u32             length;
 } MEMFREEBLOCK;
 

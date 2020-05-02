@@ -42,9 +42,6 @@ EXTERN ARDS*    p_ards;
 // ARDS数量
 EXTERN u8       n_ards;
 
-// 空闲内存起始指针
-EXTERN MEMFREEBLOCK*    MemFreeStartBlock;
-
 // 内存总空间
 u32     MemTotal;
 
