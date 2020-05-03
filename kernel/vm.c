@@ -226,6 +226,9 @@ void    setPTEAttr(PTE* pte, u8 attr){
 
 // 取消内核物理地址映射
 void    kernelUnMap(){
+    // dis_pos = 0;
+    // char*   s = "123";
+    // display_str_colorful(s, 0x0f);
     void*   _4k_pstart  = (void *)ADDR_4K_FLOOR(V2P(&_kstart));
     void*   _4k_pend    = (void *)ADDR_4K_FLOOR(V2P(&_kend));
     for(; _4k_pstart<_4k_pend; _4k_pstart+= PAGEITEMS * PAGESIZE){

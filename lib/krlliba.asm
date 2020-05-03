@@ -50,6 +50,7 @@ display_str_colorful:
 	push	eax
 	push	ebx
 	push	edx
+	push	ecx
 	
 	; 显存位置
 	mov	edi, [dis_pos]
@@ -61,7 +62,9 @@ display_str_colorful:
 	; 字体颜色
 	mov	ah, [ebp + 12]
 .loop_show_color_str:
-	cmp	edi, PER_CHAR_LEN * LINE_CHARS * (LINES - 1)
+	mov	ecx, PER_CHAR_LEN * LINE_CHARS * (LINES - 1)
+	add	ecx, dword [pVGAMEM]
+	cmp	edi, ecx
 	ja	.show_color_str_end
 	lodsb
 	cmp	al, 0x0a
@@ -88,6 +91,7 @@ display_str_colorful:
 .show_color_str_end:
 	sub	edi, dword [pVGAMEM]
 	mov	dword [dis_pos], edi
+	pop ecx
 	pop	edx
 	pop	ebx
 	pop	eax
