@@ -53,3 +53,6 @@ EXTERN u32     MemFree;
 EXTERN FPAGE*   pFreePage;
 //记录页目录的地址(物理地址)
 EXTERN PDE*     pPDETable;
+
+// 指向显存地址
+EXTERN u16*     pVGAMEM;

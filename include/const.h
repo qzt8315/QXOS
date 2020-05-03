@@ -29,4 +29,8 @@
 // 时钟中断间隔时间，单位毫秒
 #define COLOCK_DUR  10
 
+// CGA显存物理位置
+#define PCGAMEM     0xb8000
+#define EPCGAMEM    0xc0000
+
 #endif

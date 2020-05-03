@@ -13,6 +13,8 @@ extern ARDS     ARDS_SPACE;
 extern MEMFREEBLOCK MEMFREEBLOCKSPACE;
 extern PDE      PAGESPACE;
 extern PDE      _EPAGESPACE;
+extern u16      _VCGAMEM;
+extern u16      _EVCGAMEM;
 
 // 函数声明
 void    setPDEBaseAddr(PDE* pde, void* addr);
@@ -167,6 +169,31 @@ void init_vm(){
         setPTEBaseAddr(pPTE, (void*)_4k_pkstart);
         setPTEAttr(pPTE, P | WR);
     }
+
+    // 映射显存
+    void* p_vcga = (void*)&_VCGAMEM;
+    void* p_vcgaend = (void*)&_EVCGAMEM;
+    void* p_pcga = (void*)PCGAMEM;
+    *(u16**)V2P(&pVGAMEM) = p_vcga;
+    for(; p_vcga<p_vcgaend; p_vcga+=PAGESIZE, p_pcga+=PAGESIZE){
+        int indexPDE = PDEINDEX(p_vcga);
+        int indexPTE = PTEINDEX(p_vcga);
+        PDE*    temppPDE = *pPDE + indexPDE;
+        if(temppPDE->attr == 0 && temppPDE->avail_baselow4 == 0 && temppPDE->basehigh16 == 0){
+            
+            pPTE = V2P(*ph_FreePage);
+            *ph_FreePage = (*(FPAGE*)V2P(*ph_FreePage)).next;
+            Memset(pPTE, 0, PAGESIZE);
+            setPDEBaseAddr(temppPDE, pPTE);
+            setPDEAttr(temppPDE, P | WR);
+        }else{
+            pPTE = getPDEBaseAddr(temppPDE);
+        }
+        pPTE += indexPTE;
+        setPTEBaseAddr(pPTE, (void*)p_pcga);
+        setPTEAttr(pPTE, P | WR);
+    }
+
 }
 
 // 设置PDE基地址
