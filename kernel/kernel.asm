@@ -17,6 +17,7 @@ extern	init_proc
 extern	proc_table
 extern	restart
 extern	init_vm
+extern	kernelUnMap
 
 ; 内核栈
 [section .bss]
@@ -57,6 +58,8 @@ _start:
  	; jmp		eax
 	jmp		8:te
 te:
+	; 取消内核物理地址直接映射
+	call	kernelUnMap
 	call	cstart
 	lidt	[idt_ptr]
 	; 新建进程

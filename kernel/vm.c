@@ -21,6 +21,8 @@ void*   getPDEBaseAddr(PDE* pde);
 void    setPTEBaseAddr(PTE* pde, void* addr);
 void*   getPTEBaseAddr(PTE* pte);
 void    setPTEAttr(PTE* pte, u8 attr);
+void*   getFreePage();
+void    freePage(void* pPage);
 
 // 初始化内存管理，并从物理地址切换到虚拟地址运行
 void init_vm(){
@@ -193,4 +195,42 @@ void*   getPTEBaseAddr(PTE* pte){
 
 void    setPTEAttr(PTE* pte, u8 attr){
     pte->attr |= attr;
+}
+
+// 取消内核物理地址映射
+void    kernelUnMap(){
+    void*   _4k_pstart  = (void *)ADDR_4K_FLOOR(V2P(&_kstart));
+    void*   _4k_pend    = (void *)ADDR_4K_FLOOR(V2P(&_kend));
+    for(; _4k_pstart<_4k_pend; _4k_pstart+= PAGEITEMS * PAGESIZE){
+        int nPdeIndex = PDEINDEX(_4k_pstart);
+        PDE* pPde = pPDETable+nPdeIndex;
+        PTE* pPte = getPDEBaseAddr(pPde);
+        pPde->attr = 0;
+        pPde->avail_baselow4 = 0;
+        pPde->basehigh16 = 0;
+        freePage((void*)P2V(pPte));
+    }
+}
+
+//获取一个空闲页
+void*   getFreePage(){
+    if(pFreePage == NULL);
+        return NULL;
+    FPAGE* ret = pFreePage;
+    pFreePage = pFreePage->next;
+    if(pFreePage != NULL)
+        pFreePage->pre = NULL;
+    return ret;
+}
+// 释放页
+void    freePage(void* pPage){
+    if(pPage == NULL)
+        return;
+    FPAGE* p = (FPAGE*)pPage;
+    if(pFreePage != NULL){
+        pFreePage->pre = p;
+    }
+    p->pre = NULL;
+    p->next = pFreePage;
+    pFreePage = p;
 }
