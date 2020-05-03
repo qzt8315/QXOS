@@ -10,9 +10,9 @@ jmp	LOAD_START
 
 ;GDT
 Descriptor_GDT:		Descriptor	0,		0,	0
-Descriptor_CODE:	Descriptor	0,		0xffff,	DA_32 | DA_LIMIT_4K | DA_CR
-Descriptor_DATA:	Descriptor	0,		0xffff,	DA_32 | DA_LIMIT_4K | DA_DRW
-Descriptor_VIDEO:	Descriptor	0xb8000,	0xffff,	DA_DRW| DA_DPL3
+Descriptor_CODE:	Descriptor	0,		0xfffff,	DA_32 | DA_LIMIT_4K | DA_CR
+Descriptor_DATA:	Descriptor	0,		0xfffff,	DA_32 | DA_LIMIT_4K | DA_DRW
+Descriptor_VIDEO:	Descriptor	0xb8000,	0xfffff,	DA_DRW| DA_DPL3
 
 GDT_LEN		equ	$ - Descriptor_GDT
 

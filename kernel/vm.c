@@ -24,6 +24,17 @@ void    setPTEAttr(PTE* pte, u8 attr);
 
 // 初始化内存管理，并从物理地址切换到虚拟地址运行
 void init_vm(){
+    // 将原本的GDT复制到新位置并初始化GDT
+	Memcpy(V2P(gdt),
+		(void*)(*((u32*)(&((u8*)V2P(gdt_ptr))[2]))),
+		*((u16*)V2P(gdt_ptr)) + 1
+		);
+	u16 *ptr_limit = (u16*)V2P(gdt_ptr);
+	u32 *ptr_base  = (u32*)(&((u8*)V2P(gdt_ptr))[2]);
+	*ptr_limit = GDT_SIZE * sizeof(DESCRIPTOR) - 1;
+	*ptr_base  = (u32)V2P(gdt);
+
+
     // 拷贝ARDS
     ARDS *s_ards = (void*)0xc000; // 由loader中决定
     u8     n = *((u8*)(s_ards+20));
