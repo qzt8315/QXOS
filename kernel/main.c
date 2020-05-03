@@ -15,7 +15,7 @@ PUBLIC	void	init_proc(){
 	
 	// 初始化TSS
 	//TSS* p_tss	= &proc_tss;
-	set_TSS_stack_ring0(Selector_Data, &(proc_table->ldt_sel));
+	set_TSS_stack_ring0(Selector_Data, (u32)&(proc_table->ldt_sel));
 	//p_tss->ss0	= Selector_Data;
 	//p_tss->esp0	= &(proc_table->ldt_sel);
 	//p_tss->io_base	= sizeof(TSS);

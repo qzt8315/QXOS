@@ -143,7 +143,7 @@ typedef	void (*int_handler)();
 PUBLIC	int init_idt_desc(int int_no, u8 desc_type, int_handler handler, u8 privilege);
 
 // 初始化描述符
-PUBLIC	int init_desc(DESCRIPTOR* p_desc, u32 base, u32 limit, u16 attr, u8 dpl);
+PUBLIC	int init_desc(DESCRIPTOR* p_desc, void* base, u32 limit, u16 attr, u8 dpl);
 
 // 初始化中断处理
 PUBLIC	void init_prot();

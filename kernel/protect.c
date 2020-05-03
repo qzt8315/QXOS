@@ -212,15 +212,16 @@ PUBLIC	void init_prot(){
 
 
 // 初始化描述符
-PUBLIC	int init_desc(DESCRIPTOR* p_desc, u32 base, u32 limit, u16 attr, u8 dpl){
+PUBLIC	int init_desc(DESCRIPTOR* p_desc, void* base, u32 limit, u16 attr, u8 dpl){
 	if(p_desc == NULL)
 		return	-1;
+	u32	ubase = (u32)base;
 	p_desc->limit_low16 = (u16)(limit & 0xffff);
-	p_desc->base_low16	 = (u16)(base & 0xffff);
-	p_desc->base_mid8	 = (u8)((base>>16) & 0xff);
+	p_desc->base_low16	 = (u16)(ubase & 0xffff);
+	p_desc->base_mid8	 = (u8)((ubase>>16) & 0xff);
 	p_desc->attr1	 	 = (u8)((attr & 0x9f) | ((dpl & 0x3)<<5) );
 	p_desc->attr2_limit_high4	 = (u8)( ((attr>>8) & 0xf0) | ((limit>>16)&0x0f)  );
-	p_desc->base_high8	 = (u8)( (base>>24) & 0xff );
+	p_desc->base_high8	 = (u8)( (ubase>>24) & 0xff );
 	return	0;
 }
 

@@ -42,7 +42,7 @@ void init_vm(){
     int     i;
     *((u8*)V2P(&n_ards)) = n;
     Memcpy(V2P(&ARDS_SPACE), s_ards, n * sizeof(ARDS));
-    *((u32*)V2P(&p_ards)) = &ARDS_SPACE;
+    *((ARDS**)V2P(&p_ards)) = &ARDS_SPACE;
     s_ards = (ARDS *)V2P(&ARDS_SPACE);
     
     // 查找空闲内存
@@ -63,12 +63,12 @@ void init_vm(){
             // 32位模式下直接使用低32位即可
             if((kernel_start >= free_end) | (kernel_end <= free_start)){
                 // 内核空间与空闲空间完全不重合
-                p_MemFreeBlock->baseAddr = s_ards->BaseAddrLow;
+                p_MemFreeBlock->baseAddr = (void*)(s_ards->BaseAddrLow);
                 p_MemFreeBlock->length   = s_ards->LengthLow;
                 p_MemFreeBlock++;
             }
             else if((kernel_start > free_start)&&(kernel_end >= free_end)){
-                p_MemFreeBlock->baseAddr = s_ards->BaseAddrLow;
+                p_MemFreeBlock->baseAddr = (void*)(s_ards->BaseAddrLow);
                 p_MemFreeBlock->length   = (u32)V2P(&_kstart) - s_ards->BaseAddrLow;
                 p_MemFreeBlock++;
             }
@@ -78,7 +78,7 @@ void init_vm(){
                 p_MemFreeBlock++;
             }
             else if((kernel_start > free_start)&&(kernel_end < free_end)){
-                p_MemFreeBlock->baseAddr = s_ards->BaseAddrLow;
+                p_MemFreeBlock->baseAddr = (void*)(s_ards->BaseAddrLow);
                 p_MemFreeBlock->length   = (u32)V2P(&_kstart) - s_ards->BaseAddrLow;
                 p_MemFreeBlock++;
 
@@ -99,8 +99,8 @@ void init_vm(){
     u32 _4k_pkend   = ADDR_4K_CEIL(V2P(&_kend));
 
     // 初始化所有分页
-    void*   p_pageStart = ADDR_4K_CEIL(V2P(&PAGESPACE));
-    void*   p_pageEnd   = ADDR_4K_FLOOR(V2P(&_EPAGESPACE));
+    void*   p_pageStart = (void*)ADDR_4K_CEIL(V2P(&PAGESPACE));
+    void*   p_pageEnd   = (void*)ADDR_4K_FLOOR(V2P(&_EPAGESPACE));
     // 这里记录的是虚拟地址
     FPAGE*  pre_fp      = NULL; 
     // 这里使用物理地址
@@ -142,7 +142,7 @@ void init_vm(){
             pPTE = getPDEBaseAddr(temppPDE);
         }
         pPTE += indexPTE;
-        setPTEBaseAddr(pPTE, _4k_pkstart);
+        setPTEBaseAddr(pPTE, (void*)_4k_pkstart);
         setPTEAttr(pPTE, P | WR);
     }
     
@@ -162,8 +162,8 @@ void init_vm(){
             pPTE = getPDEBaseAddr(temppPDE);
         }
         pPTE += indexPTE;
-        setPTEBaseAddr(pPTE, _4k_pkstart);
-        setPDEAttr(pPTE, P | WR);
+        setPTEBaseAddr(pPTE, (void*)_4k_pkstart);
+        setPTEAttr(pPTE, P | WR);
     }
 }
 
