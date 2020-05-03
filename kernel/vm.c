@@ -32,7 +32,7 @@ void init_vm(){
 	u16 *ptr_limit = (u16*)V2P(gdt_ptr);
 	u32 *ptr_base  = (u32*)(&((u8*)V2P(gdt_ptr))[2]);
 	*ptr_limit = GDT_SIZE * sizeof(DESCRIPTOR) - 1;
-	*ptr_base  = (u32)V2P(gdt);
+	*ptr_base  = (u32)gdt;
 
 
     // 拷贝ARDS
