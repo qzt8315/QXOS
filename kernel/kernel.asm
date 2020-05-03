@@ -56,12 +56,7 @@ _start:
 	jmp		8:te
 te:
 	call	cstart
-	lgdt	[gdt_ptr]
 	lidt	[idt_ptr]
-
-	jmp	SELECTOR_KERNEL_CS:csinit
-
-csinit:
 	; 新建进程
 	call	init_proc
 

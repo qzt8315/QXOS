@@ -8,16 +8,6 @@
 
 
 PUBLIC	void	cstart(){
-	// 将原本的GDT复制到新位置并初始化GDT
-	Memcpy((void *)gdt,
-		(void*)(*((u32*)(&gdt_ptr[2]))),
-		*((u16*)(gdt_ptr)) + 1
-		);
-	u16 *ptr_limit = (u16*)gdt_ptr;
-	u32 *ptr_base  = (u32*)(&gdt_ptr[2]);
-	*ptr_limit = GDT_SIZE * sizeof(DESCRIPTOR) - 1;
-	*ptr_base  = (u32)gdt;
-
 	// 初始化IDT
 	u16 *iptr_limit = (u16*)idt_ptr;
 	u32 *iptr_base  = (u32*)(&idt_ptr[2]);
