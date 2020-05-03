@@ -1,6 +1,7 @@
 ; 内核中不得不用汇编实现的功能
 
 extern	dis_pos
+extern	pVGAMEM
 
 %define	PER_CHAR_LEN	2
 %define	LINE_CHARS	80
@@ -39,7 +40,7 @@ in_byte:
 	ret
 
 
-; 显示彩色文字
+; 显示彩色文字, 只能运行在内核空间
 ; void display_str_colorful(char *str, u8 color)
 display_str_colorful:
 	push	ebp
@@ -52,6 +53,7 @@ display_str_colorful:
 	
 	; 显存位置
 	mov	edi, [dis_pos]
+	add	edi, dword [pVGAMEM]
 	; 字符串位置
 	mov	esi, [ebp + 8]
 	cmp	esi, 0
@@ -66,7 +68,7 @@ display_str_colorful:
 	jz	.new_line
 	cmp	al, 0
 	jz	.show_color_str_end
-	mov	[gs:edi], ax
+	mov	[edi], ax
 	add	edi, PER_CHAR_LEN
 	jmp	.show_next_char
 .new_line:
@@ -84,6 +86,7 @@ display_str_colorful:
 	jmp	.loop_show_color_str
 
 .show_color_str_end:
+	sub	edi, dword [pVGAMEM]
 	mov	dword [dis_pos], edi
 	pop	edx
 	pop	ebx
