@@ -47,10 +47,10 @@ _start:
 	mov		esp, V2P(STACKTOP)
 	sgdt	[V2P(gdt_ptr)]
 	call	init_vm
-	lgdt	[V2P(gdt_ptr)]
 	mov		eax, [V2P(pPDETable)]
 	or		eax, 8
 	mov		cr3, eax
+	lgdt	[gdt_ptr]
 	; mov		eax, te
  	; jmp		eax
 	jmp		8:te
