@@ -51,6 +51,8 @@ _start:
 	or		eax, 8
 	mov		cr3, eax
 	lgdt	[gdt_ptr]
+	; 切换堆栈
+	mov		esp, STACKTOP
 	; mov		eax, te
  	; jmp		eax
 	jmp		8:te
