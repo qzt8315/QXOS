@@ -54,7 +54,6 @@ display_str_colorful:
 	
 	; 显存位置
 	mov	edi, [dis_pos]
-	add	edi, dword [pVGAMEM]
 	; 字符串位置
 	mov	esi, [ebp + 8]
 	cmp	esi, 0
@@ -62,16 +61,16 @@ display_str_colorful:
 	; 字体颜色
 	mov	ah, [ebp + 12]
 .loop_show_color_str:
-	mov	ecx, PER_CHAR_LEN * LINE_CHARS * (LINES - 1)
-	add	ecx, dword [pVGAMEM]
-	cmp	edi, ecx
+	cmp	edi, PER_CHAR_LEN * LINE_CHARS * (LINES - 1)
 	ja	.show_color_str_end
 	lodsb
 	cmp	al, 0x0a
 	jz	.new_line
 	cmp	al, 0
 	jz	.show_color_str_end
+	add	edi, dword [pVGAMEM]
 	mov	[edi], ax
+	sub edi, dword [pVGAMEM]
 	add	edi, PER_CHAR_LEN
 	jmp	.show_next_char
 .new_line:
@@ -89,7 +88,6 @@ display_str_colorful:
 	jmp	.loop_show_color_str
 
 .show_color_str_end:
-	sub	edi, dword [pVGAMEM]
 	mov	dword [dis_pos], edi
 	pop ecx
 	pop	edx

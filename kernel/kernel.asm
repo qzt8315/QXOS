@@ -27,6 +27,7 @@ global	PAGESPACE
 global	_EPAGESPACE
 global	MEMFREEBLOCKSPACE
 global	_EMEMFREEBLOCKSPACE
+global	USERSTACKTOP_TEMP
 
 STACKSPACE:	resb	STACK_SIZE
 STACKTOP:
@@ -36,6 +37,8 @@ _EPAGESPACE:
 ; 注意最多512项
 MEMFREEBLOCKSPACE:	resb	_4K
 _EMEMFREEBLOCKSPACE:
+USERSTACK_TEMP:	resb	_4K
+USERSTACKTOP_TEMP:
 
 [section .text]
 align   32
@@ -71,7 +74,7 @@ te:
 	push	TSS_SELECTOR
 	call	load_tss
 	add		esp, 4
-	mov	ax, 0x28
+	mov		ax, 0x28
 	lldt	ax
 	inc 	dword [k_reenter]
 	jmp		restart

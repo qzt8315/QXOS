@@ -8,6 +8,8 @@
 void 			display_str_colorful(char *str, u8 color);
 void			TestA();
 
+extern	u32	USERSTACKTOP_TEMP;
+
 // 为新线程创建做准备
 PUBLIC	void	init_proc(){
 	// 初始化TSS段
@@ -36,7 +38,7 @@ PUBLIC	void	init_proc(){
 	process->regs.es = Selector_Ldt_Data | SA_RPL_1 | SA_TIL;
 	process->regs.gs = Selector_Video | SA_RPL_1;
 	process->regs.eip = (u32)TestA;
-	process->regs.esp = 0x400000;
+	process->regs.esp = (u32)&USERSTACKTOP_TEMP;
 	process->regs.eflags = 0x1202;
 }
 
