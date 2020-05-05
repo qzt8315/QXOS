@@ -15,6 +15,17 @@ extern PDE      PAGESPACE;
 extern PDE      _EPAGESPACE;
 extern u16      _VCGAMEM;
 extern u16      _EVCGAMEM;
+extern BUDDYBLOCK   PAGE1DEFAULT;
+extern BUDDYBLOCK   PAGE2DEFAULT;
+extern BUDDYBLOCK   PAGE4DEFAULT;
+extern BUDDYBLOCK   PAGE8DEFAULT;
+extern BUDDYBLOCK   PAGE16DEFAULT;
+extern BUDDYBLOCK   PAGE32DEFAULT;
+extern BUDDYBLOCK   PAGE64DEFAULT;
+extern BUDDYBLOCK   PAGE128DEFAULT;
+extern BUDDYBLOCK   PAGE256DEFAULT;
+extern BUDDYBLOCK   PAGE512DEFAULT;
+extern BUDDYBLOCK   PAGE1024DEFAULT;
 
 // 函数声明
 void    setPDEBaseAddr(PDE* pde, void* addr);
@@ -25,6 +36,8 @@ void*   getPTEBaseAddr(PTE* pte);
 void    setPTEAttr(PTE* pte, u8 attr);
 void*   getFreePage();
 void    freePage(void* pPage);
+void    recordInBuddyBlock(void* startAddr, u32   length, int deep);
+void    initBuddyBlocks();
 
 // 初始化内存管理，并从物理地址切换到虚拟地址运行
 void init_vm(){
@@ -50,6 +63,9 @@ void init_vm(){
     s_ards = (ARDS *)V2P(&ARDS_SPACE);
     
     // 查找空闲内存
+    // 初始化buddyBLOCK
+    initBuddyBlocks();
+
     // MemFreeStartBlock = NULL;
     MEMFREEBLOCK* p_MemFreeBlock = V2P(&MEMFREEBLOCKSPACE);
     u32* pMemTotal = V2P(&MemTotal);
@@ -263,4 +279,32 @@ void    freePage(void* pPage){
     p->pre = NULL;
     p->next = pFreePage;
     pFreePage = p;
+}
+
+// 初始化BuddyBlock
+void    initBuddyBlocks(){
+    void*   addrList[]      = {&PAGE1DEFAULT, &PAGE2DEFAULT,
+                                &PAGE4DEFAULT, &PAGE8DEFAULT,
+                                &PAGE16DEFAULT, &PAGE32DEFAULT,
+                                &PAGE64DEFAULT, &PAGE128DEFAULT,
+                                &PAGE256DEFAULT, &PAGE512DEFAULT,
+                                &PAGE1024DEFAULT};
+    BUDDYBLOCK* temp_pBB    = NULL;
+    int i;
+
+    // 初始化buddyblock
+    for(i =0 ; i<sizeof(addrList)/sizeof(addrList[0]); i++){
+        *(BUDDYBLOCK**)V2P(&pBuddyBlocks[i])    = addrList[i];
+        temp_pBB                                = V2P(addrList[i]);
+        temp_pBB->num                           = 0;
+        temp_pBB->type                          = (u16)i;
+        temp_pBB->preBlock                      = NULL;
+        temp_pBB->nextBlock                     = NULL;
+    }
+    
+}
+
+// 将一段物理内存放入空闲内存中以便可以分配内存
+void    recordInBuddyBlock(void* startAddr, u32   length, int deep){
+
 }

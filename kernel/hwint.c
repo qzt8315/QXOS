@@ -14,10 +14,10 @@ PUBLIC void hwint_handler(u32 hwint_no){
 
 	char hwint_str[11];
 
-	display_str_colorful("hwint no:", char_color);
-	uint2str(hwint_no, hwint_str);
-	display_str_colorful(hwint_str, char_color);
-	display_str_colorful("\n", char_color);
+	// display_str_colorful("hwint no:", char_color);
+	// uint2str(hwint_no, hwint_str);
+	// display_str_colorful(hwint_str, char_color);
+	// display_str_colorful("\n", char_color);
 	switch (hwint_no)
 	{
 	case 0:

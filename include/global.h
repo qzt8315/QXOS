@@ -49,10 +49,13 @@ EXTERN u32     MemTotal;
 // 内存空余总空间
 EXTERN u32     MemFree;
 
-// 记录第一个空闲的页表(虚拟地址)
+// 记录第一个空闲的页表(虚拟地址),用于PTE或者PDE的页帧
 EXTERN FPAGE*   pFreePage;
 //记录页目录的地址(物理地址)
 EXTERN PDE*     pPDETable;
+
+// 
+EXTERN  BUDDYBLOCK* pBuddyBlocks[11];
 
 // 指向显存地址
 EXTERN u16*     pVGAMEM;
