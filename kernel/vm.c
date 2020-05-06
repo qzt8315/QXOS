@@ -36,7 +36,7 @@ void*   getPTEBaseAddr(PTE* pte);
 void    setPTEAttr(PTE* pte, u8 attr);
 void*   getFreePage();
 void    freePage(void* pPage);
-void    recordInBuddyBlock(void* startAddr, u32   length, int deep);
+void*   recordInBuddyBlock(void* startAddr, u32   length, int deep);
 void    initBuddyBlocks();
 
 // 初始化内存管理，并从物理地址切换到虚拟地址运行
@@ -86,25 +86,30 @@ void init_vm(){
                 p_MemFreeBlock->baseAddr = (void*)(s_ards->BaseAddrLow);
                 p_MemFreeBlock->length   = s_ards->LengthLow;
                 p_MemFreeBlock++;
+                recordInBuddyBlock((void*)(s_ards->BaseAddrLow), s_ards->LengthLow, 0);
             }
             else if((kernel_start > free_start)&&(kernel_end >= free_end)){
                 p_MemFreeBlock->baseAddr = (void*)(s_ards->BaseAddrLow);
                 p_MemFreeBlock->length   = (u32)V2P(&_kstart) - s_ards->BaseAddrLow;
                 p_MemFreeBlock++;
+                recordInBuddyBlock((void*)(s_ards->BaseAddrLow), (u32)V2P(&_kstart) - s_ards->BaseAddrLow, 0);
             }
             else if((kernel_start <= free_start)&&(kernel_end < free_end)){
                 p_MemFreeBlock->baseAddr = V2P(&_kend);
                 p_MemFreeBlock->length   = s_ards->BaseAddrLow + s_ards->LengthLow - (u32)V2P(&_kend);
                 p_MemFreeBlock++;
+                recordInBuddyBlock(V2P(&_kend), s_ards->BaseAddrLow + s_ards->LengthLow - (u32)V2P(&_kend), 0);
             }
             else if((kernel_start > free_start)&&(kernel_end < free_end)){
                 p_MemFreeBlock->baseAddr = (void*)(s_ards->BaseAddrLow);
                 p_MemFreeBlock->length   = (u32)V2P(&_kstart) - s_ards->BaseAddrLow;
                 p_MemFreeBlock++;
+                recordInBuddyBlock((void*)(s_ards->BaseAddrLow), (u32)V2P(&_kstart) - s_ards->BaseAddrLow, 0);
 
                 p_MemFreeBlock->baseAddr = V2P(&_kend);
                 p_MemFreeBlock->length   = s_ards->BaseAddrLow + s_ards->LengthLow - (u32)V2P(&_kend);
                 p_MemFreeBlock++;
+                recordInBuddyBlock(V2P(&_kend), s_ards->BaseAddrLow + s_ards->LengthLow - (u32)V2P(&_kend), 0);
             }
         }
     }
@@ -305,6 +310,27 @@ void    initBuddyBlocks(){
 }
 
 // 将一段物理内存放入空闲内存中以便可以分配内存
-void    recordInBuddyBlock(void* startAddr, u32   length, int deep){
-
+// 返回的内容是调整后的起始地址, 起初调用的deep为0
+void*    recordInBuddyBlock(void* startAddr, u32   length, int deep){
+    const u32 maxDeep = sizeof(pBuddyBlocks)/sizeof(((BUDDYBLOCK**)V2P(pBuddyBlocks))[0])-1;
+    if(deep<0 || deep > maxDeep)
+        return startAddr;
+    u32 minL    = N_4K * (1<<deep);
+    void*   endAddr = startAddr+length;
+    startAddr       = (void*)ADDR_4K_CEIL(startAddr);
+    endAddr         = (void*)ADDR_4K_FLOOR(endAddr);
+    length          = endAddr - startAddr;
+    if(length < minL)
+        return startAddr;
+    else if(length >= (minL<<1) && deep < maxDeep){
+        startAddr = recordInBuddyBlock(startAddr, length, deep+1);
+        length = endAddr - startAddr;
+    }
+    do{
+        BUDDYBLOCK* temp_pBuddyBlock = V2P(*((BUDDYBLOCK**)V2P(pBuddyBlocks)+deep));
+        temp_pBuddyBlock->pagesAddrs[temp_pBuddyBlock->num] = startAddr;
+        startAddr += minL;
+        length = endAddr-startAddr;
+    }while(length>minL);
+    return startAddr;
 }
