@@ -17,14 +17,6 @@ typedef struct s_ards
 
 #define ARDS_SIZE   20
 
-
-// 空闲内存块
-typedef struct s_memFreeBlock
-{
-    void*           baseAddr;
-    u32             length;
-} MEMFREEBLOCK;
-
 // 用于管理空闲内存， 方法来自于buddy
 typedef struct s_buddyblock{
     u16     num;    // 最大数量1022

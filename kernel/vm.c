@@ -10,7 +10,6 @@
 extern void*    _kend;
 extern void*    _kstart; 
 extern ARDS     ARDS_SPACE;
-extern MEMFREEBLOCK MEMFREEBLOCKSPACE;
 extern PDE      PAGESPACE;
 extern PDE      _EPAGESPACE;
 extern u16      _VCGAMEM;
@@ -67,48 +66,30 @@ void init_vm(){
     initBuddyBlocks();
 
     // MemFreeStartBlock = NULL;
-    MEMFREEBLOCK* p_MemFreeBlock = V2P(&MEMFREEBLOCKSPACE);
     u32* pMemTotal = V2P(&MemTotal);
     u32* pMemFree  = V2P(&MemFree);
     u32 kernel_start = ADDR_4K_FLOOR(V2P(&_kstart));
     u32 kernel_end   = ADDR_4K_CEIL(V2P(&_kend));
-    // *pp_MemFreeStartBlock = NULL;
     for(i=0; i<n; i++, s_ards++){
         (*pMemTotal) += s_ards->LengthLow;
         if(s_ards->type == OS_USEFUL){
             (*pMemFree) += s_ards->LengthLow;
-            // MEMFREEBLOCK* temp_p;
             u32 free_start = ADDR_4K_CEIL(s_ards->BaseAddrLow);
             u32 free_end   = ADDR_4K_FLOOR(s_ards->BaseAddrLow + s_ards->LengthLow);
             // 32位模式下直接使用低32位即可
             if((kernel_start >= free_end) | (kernel_end <= free_start)){
                 // 内核空间与空闲空间完全不重合
-                p_MemFreeBlock->baseAddr = (void*)(s_ards->BaseAddrLow);
-                p_MemFreeBlock->length   = s_ards->LengthLow;
-                p_MemFreeBlock++;
                 recordInBuddyBlock((void*)(s_ards->BaseAddrLow), s_ards->LengthLow, 0);
             }
             else if((kernel_start > free_start)&&(kernel_end >= free_end)){
-                p_MemFreeBlock->baseAddr = (void*)(s_ards->BaseAddrLow);
-                p_MemFreeBlock->length   = (u32)V2P(&_kstart) - s_ards->BaseAddrLow;
-                p_MemFreeBlock++;
                 recordInBuddyBlock((void*)(s_ards->BaseAddrLow), (u32)V2P(&_kstart) - s_ards->BaseAddrLow, 0);
             }
             else if((kernel_start <= free_start)&&(kernel_end < free_end)){
-                p_MemFreeBlock->baseAddr = V2P(&_kend);
-                p_MemFreeBlock->length   = s_ards->BaseAddrLow + s_ards->LengthLow - (u32)V2P(&_kend);
-                p_MemFreeBlock++;
                 recordInBuddyBlock(V2P(&_kend), s_ards->BaseAddrLow + s_ards->LengthLow - (u32)V2P(&_kend), 0);
             }
             else if((kernel_start > free_start)&&(kernel_end < free_end)){
-                p_MemFreeBlock->baseAddr = (void*)(s_ards->BaseAddrLow);
-                p_MemFreeBlock->length   = (u32)V2P(&_kstart) - s_ards->BaseAddrLow;
-                p_MemFreeBlock++;
                 recordInBuddyBlock((void*)(s_ards->BaseAddrLow), (u32)V2P(&_kstart) - s_ards->BaseAddrLow, 0);
 
-                p_MemFreeBlock->baseAddr = V2P(&_kend);
-                p_MemFreeBlock->length   = s_ards->BaseAddrLow + s_ards->LengthLow - (u32)V2P(&_kend);
-                p_MemFreeBlock++;
                 recordInBuddyBlock(V2P(&_kend), s_ards->BaseAddrLow + s_ards->LengthLow - (u32)V2P(&_kend), 0);
             }
         }
