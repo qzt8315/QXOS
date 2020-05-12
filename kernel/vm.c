@@ -14,6 +14,12 @@ extern PDE      PAGESPACE;
 extern PDE      _EPAGESPACE;
 extern u16      _VCGAMEM;
 extern u16      _EVCGAMEM;
+extern u8       HIGHMEM;
+extern u8       VMALLOCSPACE;
+extern u8       _EVMALLOCSPACE;
+extern u8       DYNAMICADDR;
+extern u8       _EDYNAMICADDR;
+extern u8       KERNEL_PAGE_POS;
 extern BUDDYBLOCK   PAGE1DEFAULT;
 extern BUDDYBLOCK   PAGE2DEFAULT;
 extern BUDDYBLOCK   PAGE4DEFAULT;
@@ -35,8 +41,11 @@ void*   getPTEBaseAddr(PTE* pte);
 void    setPTEAttr(PTE* pte, u8 attr);
 void*   getFreePage();
 void    freePage(void* pPage);
-void*   recordInBuddyBlock(void* startAddr, u32   length, int deep);
+void*   recordInBuddyBlock(void* startAddr, u32   length, int deep, u8 type);
 void    initBuddyBlocks();
+void*   getFreeKVAddr(u32   size, u8 type);
+void*   getFreeMem(u32  size);
+int     mmap(void* PAddr, void* VAddr, u8 attr);
 
 // 初始化内存管理，并从物理地址切换到虚拟地址运行
 void init_vm(){
@@ -79,18 +88,18 @@ void init_vm(){
             // 32位模式下直接使用低32位即可
             if((kernel_start >= free_end) | (kernel_end <= free_start)){
                 // 内核空间与空闲空间完全不重合
-                recordInBuddyBlock((void*)(s_ards->BaseAddrLow), s_ards->LengthLow, 0);
+                recordInBuddyBlock((void*)(s_ards->BaseAddrLow), s_ards->LengthLow, 0, 0);
             }
             else if((kernel_start > free_start)&&(kernel_end >= free_end)){
-                recordInBuddyBlock((void*)(s_ards->BaseAddrLow), (u32)V2P(&_kstart) - s_ards->BaseAddrLow, 0);
+                recordInBuddyBlock((void*)(s_ards->BaseAddrLow), (u32)V2P(&_kstart) - s_ards->BaseAddrLow, 0, 0);
             }
             else if((kernel_start <= free_start)&&(kernel_end < free_end)){
-                recordInBuddyBlock(V2P(&_kend), s_ards->BaseAddrLow + s_ards->LengthLow - (u32)V2P(&_kend), 0);
+                recordInBuddyBlock(V2P(&_kend), s_ards->BaseAddrLow + s_ards->LengthLow - (u32)V2P(&_kend), 0, 0);
             }
             else if((kernel_start > free_start)&&(kernel_end < free_end)){
-                recordInBuddyBlock((void*)(s_ards->BaseAddrLow), (u32)V2P(&_kstart) - s_ards->BaseAddrLow, 0);
+                recordInBuddyBlock((void*)(s_ards->BaseAddrLow), (u32)V2P(&_kstart) - s_ards->BaseAddrLow, 0, 0);
 
-                recordInBuddyBlock(V2P(&_kend), s_ards->BaseAddrLow + s_ards->LengthLow - (u32)V2P(&_kend), 0);
+                recordInBuddyBlock(V2P(&_kend), s_ards->BaseAddrLow + s_ards->LengthLow - (u32)V2P(&_kend), 0, 0);
             }
         }
     }
@@ -196,6 +205,11 @@ void init_vm(){
         setPTEAttr(pPTE, P | WR);
     }
 
+    // 将分页信息映射到指定位置
+    int iPDE    = PDEINDEX(&KERNEL_PAGE_POS);
+    PDE* kpPage = *pPDE + iPDE;
+    setPDEBaseAddr(kpPage, (void*)*pPDE);
+    setPDEAttr(kpPage, P| WR);
 }
 
 // 设置PDE基地址
@@ -292,8 +306,15 @@ void    initBuddyBlocks(){
 
 // 将一段物理内存放入空闲内存中以便可以分配内存
 // 返回的内容是调整后的起始地址, 起初调用的deep为0
-void*    recordInBuddyBlock(void* startAddr, u32   length, int deep){
-    const u32 maxDeep = sizeof(pBuddyBlocks)/sizeof(((BUDDYBLOCK**)V2P(pBuddyBlocks))[0])-1;
+// type = 0:运行在物理地址
+// type = 1:运行在虚拟地址
+void*   recordInBuddyBlock(void* startAddr, u32   length, int deep, u8 type){
+    u32 maxDeep;
+    if(type){
+        maxDeep = sizeof(pBuddyBlocks)/sizeof(pBuddyBlocks[0])-1;
+    }else{
+        maxDeep = sizeof(pBuddyBlocks)/sizeof(((BUDDYBLOCK**)V2P(pBuddyBlocks))[0])-1;
+    }
     if(deep<0 || deep > maxDeep)
         return startAddr;
     u32 minL    = N_4K * (1<<deep);
@@ -304,14 +325,175 @@ void*    recordInBuddyBlock(void* startAddr, u32   length, int deep){
     if(length < minL)
         return startAddr;
     else if(length >= (minL<<1) && deep < maxDeep){
-        startAddr = recordInBuddyBlock(startAddr, length, deep+1);
+        startAddr = recordInBuddyBlock(startAddr, length, deep+1, type);
         length = endAddr - startAddr;
     }
     do{
-        BUDDYBLOCK* temp_pBuddyBlock = V2P(*((BUDDYBLOCK**)V2P(pBuddyBlocks)+deep));
+        BUDDYBLOCK* temp_pBuddyBlock;
+        if(type){
+            temp_pBuddyBlock = *(pBuddyBlocks+deep);
+        }else{
+            temp_pBuddyBlock = V2P(*((BUDDYBLOCK**)V2P(pBuddyBlocks)+deep));
+        }
         temp_pBuddyBlock->pagesAddrs[temp_pBuddyBlock->num] = startAddr;
         startAddr += minL;
         length = endAddr-startAddr;
     }while(length>minL);
     return startAddr;
+}
+
+// 申请分配内核空间,分配3G+896M之间的地址
+// 当申请成功时返回虚拟地址，当申请失败时返回空指针
+// 申请大小单位为4K
+// type定义:    
+// 0: 不保证物理地址连续，并且在896M以内,优先物理地址连续
+// 1: 保证物理地址连续性，并且在896M以内
+// 2: 不保证物理地址连续性，并且在896M以外
+void* malloc(u32 size, u8 type){
+    u32 _4k_size = ADDR_4K_CEIL(size);
+    void* pVaddr = NULL;
+    void* ret    = pVaddr;
+    void* pPaddr = NULL;
+    u32   mCount = 0;
+    switch (type)
+    {
+    case SMALLOC_TYPE:
+        pVaddr = getFreeKVAddr(_4k_size, 0);
+        ret = pVaddr;
+        do{
+            void* pPaddr= getFreeMem(N_4K);
+            if(pPaddr == (void*)0xffffffff)
+                return NULL;
+            else
+                mmap(pPaddr, pVaddr, P | WR);
+            
+            mCount += N_4K;
+            pVaddr += N_4K;
+        }while(mCount < _4k_size);
+        return  ret;
+        break;
+    case KMALLOC_TYPE:
+        break;
+    case VMALLOC_TYPE:
+        break;
+    default:
+        return  NULL;
+        break;
+    }
+}
+
+// 获取连续虚拟地址
+// type=0: 3G~3G+896M
+// type=1: vmalloc区域
+// type=2: 动态映射区
+void*   getFreeKVAddr(u32   size, u8 type){
+    const u32   uPage       = ADDR_4K_CEIL(size)>>12;
+    u32         uCount      = 0;
+    void*       pStart;
+    void*       pEnd;
+    switch (type)
+    {
+    case 0:
+        pStart  = (void*)ADDR_4K_CEIL(&_kend);
+        pEnd    = (void*)ADDR_4K_FLOOR(&HIGHMEM);
+        break;
+
+    case 1:
+        pStart  = (void*)ADDR_4K_CEIL(&VMALLOCSPACE);
+        pEnd    = (void*)ADDR_4K_FLOOR(&_EVMALLOCSPACE);
+        break;
+
+    case 2:
+        pStart  = (void*)ADDR_4K_CEIL(&DYNAMICADDR);
+        pEnd    = (void*)&_EDYNAMICADDR;
+        break;
+    
+    default:
+        return  NULL;
+        break;
+    }
+    void* pVAddr = pStart;
+    while(uCount< uPage || pVAddr<pEnd){
+        u32 iPDE = PDEINDEX(pVAddr);
+        u32 iPTE = PTEINDEX(pVAddr);
+        PDE*    pPdePage = (PDE*)(((u32)&KERNEL_PAGE_POS)|(((u32)&KERNEL_PAGE_POS)>>10))+iPDE;
+        PTE*    pPtePage = (PTE*)getPDEBaseAddr(pPdePage);
+        if(pPdePage == NULL && ((PTE*)P2V(pPdePage))->attr == NULL){
+            uCount++;
+            pVAddr+=N_4K;
+        }else{
+            // 地址指定的PTE
+            PTE*    pPte = (PTE*)P2V(pPdePage)+iPTE;
+            if(getPTEBaseAddr(pPte) == NULL && pPte->attr == NULL){
+                uCount++;
+                pVAddr+=N_4K;
+            }else{
+                uCount=0;
+                pVAddr+=N_4K;
+                pStart = pVAddr;
+            }
+        }
+    }
+
+    if(uCount>=uPage){
+        return pStart;
+    }else{
+        return NULL;
+    }
+}
+
+// 获取空闲的物理内存(连续的)
+// 最大支持4M(1024页)，最小分割单位4K，当返回0xffffffff时地址无效
+void*   getFreeMem(u32  size){
+    if(size == 0 || size >= 0x400000)
+        return (void*)0xffffffff;
+    u32 _4k_size = ADDR_4K_CEIL(size);
+    u8  u8count  = 1;
+    void*   retAddr = (void*)0xffffffff;
+    while((_4k_size>>u8count) ==1){
+        u8count++;
+    }
+    u32 _2nSize = _4k_size > (1<<u8count)? 1<<(++u8count) : 1<<u8count ;
+    u8  ibuddyblocks = u8count - 13;
+    if(pBuddyBlocks[ibuddyblocks]->num == 0){
+        retAddr = getFreeMem(_2nSize*2);
+        if(retAddr != (void*)0xffffffff){
+            u16 index = pBuddyBlocks[ibuddyblocks]->num;
+            if(index < BUDDYBLOCKMAXNUM){
+                pBuddyBlocks[ibuddyblocks]->pagesAddrs[index] = retAddr+_2nSize;
+                pBuddyBlocks[ibuddyblocks]->num+=1;
+            }else{
+                void*   pVaddr = getFreeKVAddr(N_4K, 0);
+                void*   pPaddr = getFreeMem(N_4K);
+
+            }
+        }
+    }else{
+        u16 index = pBuddyBlocks[ibuddyblocks]->num - 1;
+        if(index >= BUDDYBLOCKMAXNUM)
+            return (void*)0xffffffff;
+        retAddr = pBuddyBlocks[ibuddyblocks]->pagesAddrs[index];
+        pBuddyBlocks[ibuddyblocks]->num -= 1;
+    }
+}
+
+//  对应一个4K页
+int mmap(void* PAddr, void* VAddr, u8 attr){
+    PDE*    pPdePage = (PDE*)((u32)&KERNEL_PAGE_POS | ((u32)&KERNEL_PAGE_POS)>>10);
+    u32     iPDE     = PDEINDEX(VAddr);
+    u32     iPTE     = PTEINDEX(VAddr);
+    void*   pPTE     = getPDEBaseAddr(pPdePage+iPDE);
+    if(pPTE != NULL && !(((pPdePage+iPDE)->attr)&1)){
+        PTE*    pPTE = (PTE*)((u32)&KERNEL_PAGE_POS | iPDE << 12) + iPTE;
+        setPTEBaseAddr(pPTE, PAddr);
+        setPTEAttr(pPTE, attr);
+    }else{
+        void*   freePage = getFreePage();
+        setPDEBaseAddr(pPdePage+iPDE, freePage);
+        setPDEAttr(pPdePage+iPDE, attr);
+        PTE*    pPTE = (PTE*)((u32)&KERNEL_PAGE_POS | iPDE << 12) + iPTE;
+        setPTEBaseAddr(pPTE, PAddr);
+        setPTEAttr(pPTE, attr);
+    }
+    return 0;
 }

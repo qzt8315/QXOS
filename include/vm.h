@@ -59,5 +59,13 @@ typedef struct s_fpage
 // 获取PTE表的index
 #define PTEINDEX(addr)  (((u32)(addr) & 0x003ff000)>>12)
 
+//  分配内存空间
+#define SMALLOC_TYPE    0
+#define KMALLOC_TYPE    1
+#define VMALLOC_TYPE    2
+
+// 分配内核地址
+void* malloc(u32 size, u8 type);
+
 
 #endif
