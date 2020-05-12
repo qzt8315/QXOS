@@ -3,7 +3,7 @@
 # kernel entry point
 # KRLENTRYPOINT		= 0x100400
 KRLENTRYPOINT		= 0xc0000400
-LINKSCRIPT			= kernel.ld
+LINKSCRIPT			= kernel.lds
 
 #
 KRLENTRYOFFSET		= 0x400
@@ -86,5 +86,5 @@ kernel/main_sam.o: kernel/main_sam.asm include/kernel.inc
 lib/krlliba.o : lib/krlliba.asm
 	$(ASM) $(ASMKFLAGS) -o $@ $<
 
-$(QXOSKERNEL) : $(OBJS)
+$(QXOSKERNEL) : $(OBJS) $(LINKSCRIPT)
 	$(LD) $(LDFLAGS) -o $(QXOSKERNEL) $(OBJS)
