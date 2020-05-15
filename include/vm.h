@@ -12,7 +12,8 @@
 #define N_4K                0x1000
 
 // 虚拟地址转物理地址
-#define V2P(addr)       ((void*)(addr)+K_P_BASE_ADDR-K_V_BASE_ADDR)
+#define V2P(addr)       ((void*)addr+K_P_BASE_ADDR-K_V_BASE_ADDR)
+
 // 物理地址转虚拟地址
 #define P2V(addr)       ((void*)(addr)+K_V_BASE_ADDR-K_P_BASE_ADDR)
 

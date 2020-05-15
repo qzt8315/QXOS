@@ -309,12 +309,7 @@ void    initBuddyBlocks(){
 // type = 0:运行在物理地址
 // type = 1:运行在虚拟地址
 void*   recordInBuddyBlock(void* startAddr, u32   length, int deep, u8 type){
-    u32 maxDeep;
-    if(type){
-        maxDeep = sizeof(pBuddyBlocks)/sizeof(pBuddyBlocks[0])-1;
-    }else{
-        maxDeep = sizeof(pBuddyBlocks)/sizeof(((BUDDYBLOCK**)V2P(pBuddyBlocks))[0])-1;
-    }
+    u32 maxDeep = sizeof(pBuddyBlocks)/sizeof(BUDDYBLOCK**)-1;
     if(deep<0 || deep > maxDeep)
         return startAddr;
     u32 minL    = N_4K * (1<<deep);
@@ -324,21 +319,22 @@ void*   recordInBuddyBlock(void* startAddr, u32   length, int deep, u8 type){
     length          = endAddr - startAddr;
     if(length < minL)
         return startAddr;
-    else if(length >= (minL<<1) && deep < maxDeep){
+    else if(deep < maxDeep && length >= (minL<<1)){
         startAddr = recordInBuddyBlock(startAddr, length, deep+1, type);
         length = endAddr - startAddr;
     }
-    do{
+    while(length>=minL){
         BUDDYBLOCK* temp_pBuddyBlock;
         if(type){
             temp_pBuddyBlock = *(pBuddyBlocks+deep);
         }else{
-            temp_pBuddyBlock = V2P(*((BUDDYBLOCK**)V2P(pBuddyBlocks)+deep));
+            temp_pBuddyBlock = V2P(*(((BUDDYBLOCK**)V2P(pBuddyBlocks))+deep));
         }
-        temp_pBuddyBlock->pagesAddrs[temp_pBuddyBlock->num] = startAddr;
+        temp_pBuddyBlock->pagesAddrs[temp_pBuddyBlock->num++] = startAddr;
         startAddr += minL;
+        startAddr = (void*)ADDR_4K_CEIL(startAddr);
         length = endAddr-startAddr;
-    }while(length>minL);
+    }
     return startAddr;
 }
 
@@ -359,11 +355,13 @@ void* malloc(u32 size, u8 type){
     {
     case SMALLOC_TYPE:
         pVaddr = getFreeKVAddr(_4k_size, 0);
+        if(pVaddr == (void*)0xffffffff)
+            return (void*)0xffffffff;
         ret = pVaddr;
         do{
             void* pPaddr= getFreeMem(N_4K);
             if(pPaddr == (void*)0xffffffff)
-                return NULL;
+                return (void*)0xffffffff;
             else
                 mmap(pPaddr, pVaddr, P | WR);
             
@@ -377,7 +375,7 @@ void* malloc(u32 size, u8 type){
     case VMALLOC_TYPE:
         break;
     default:
-        return  NULL;
+        return (void*)0xffffffff;
         break;
     }
 }
@@ -388,9 +386,12 @@ void* malloc(u32 size, u8 type){
 // type=2: 动态映射区
 void*   getFreeKVAddr(u32   size, u8 type){
     const u32   uPage       = ADDR_4K_CEIL(size)>>12;
+    if(uPage == 0)
+        return (void*)0xffffffff;
     u32         uCount      = 0;
     void*       pStart;
     void*       pEnd;
+    void*       pVAddr;
     switch (type)
     {
     case 0:
@@ -409,52 +410,50 @@ void*   getFreeKVAddr(u32   size, u8 type){
         break;
     
     default:
-        return  NULL;
+        return  (void*)0xffffffff;
         break;
     }
-    void* pVAddr = pStart;
-    while(uCount< uPage || pVAddr<pEnd){
+    pVAddr = pStart;
+    while(uCount< uPage && pVAddr<pEnd){
         u32 iPDE = PDEINDEX(pVAddr);
         u32 iPTE = PTEINDEX(pVAddr);
         PDE*    pPdePage = (PDE*)(((u32)&KERNEL_PAGE_POS)|(((u32)&KERNEL_PAGE_POS)>>10))+iPDE;
         PTE*    pPtePage = (PTE*)getPDEBaseAddr(pPdePage);
-        if(pPdePage == NULL && ((PTE*)P2V(pPdePage))->attr == NULL){
+        if(pPtePage == NULL && pPdePage->attr == NULL){
             uCount++;
-            pVAddr+=N_4K;
         }else{
             // 地址指定的PTE
-            PTE*    pPte = (PTE*)P2V(pPdePage)+iPTE;
+            PTE*    pPte = (PTE*)(((u32)&KERNEL_PAGE_POS) | iPDE <<12)+iPTE;
             if(getPTEBaseAddr(pPte) == NULL && pPte->attr == NULL){
                 uCount++;
-                pVAddr+=N_4K;
             }else{
                 uCount=0;
-                pVAddr+=N_4K;
                 pStart = pVAddr;
             }
         }
+        pVAddr += N_4K;
     }
 
     if(uCount>=uPage){
         return pStart;
     }else{
-        return NULL;
+        return (void*)0xffffffff;
     }
 }
 
 // 获取空闲的物理内存(连续的)
 // 最大支持4M(1024页)，最小分割单位4K，当返回0xffffffff时地址无效
 void*   getFreeMem(u32  size){
-    if(size == 0 || size >= 0x400000)
-        return (void*)0xffffffff;
+    if(size == 0 || size > 0x400000)
+        return (void*)0xfffffffe;
     u32 _4k_size = ADDR_4K_CEIL(size);
     u8  u8count  = 1;
     void*   retAddr = (void*)0xffffffff;
-    while((_4k_size>>u8count) ==1){
+    while((_4k_size>>u8count)!=1){
         u8count++;
     }
     u32 _2nSize = _4k_size > (1<<u8count)? 1<<(++u8count) : 1<<u8count ;
-    u8  ibuddyblocks = u8count - 13;
+    u8  ibuddyblocks = u8count - 12;
     if(pBuddyBlocks[ibuddyblocks]->num == 0){
         retAddr = getFreeMem(_2nSize*2);
         if(retAddr != (void*)0xffffffff){
@@ -475,6 +474,7 @@ void*   getFreeMem(u32  size){
         retAddr = pBuddyBlocks[ibuddyblocks]->pagesAddrs[index];
         pBuddyBlocks[ibuddyblocks]->num -= 1;
     }
+    return  retAddr;
 }
 
 //  对应一个4K页
