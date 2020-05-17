@@ -33,4 +33,6 @@
 #define PCGAMEM     0xb8000
 #define EPCGAMEM    0xc0000
 
+#define PROC_STACKSIZE N_4K
+
 #endif

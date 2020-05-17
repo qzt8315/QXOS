@@ -1,5 +1,6 @@
 #ifndef	__PROC_H__
 #define	__PROC_H__
+#include "vm.h"
 
 typedef	struct	s_stack_frame{
 	u32	gs;
@@ -15,6 +16,7 @@ typedef	struct	s_stack_frame{
 	u32	ecx;
 	u32	eax;
 	u32	retaddr;
+	u32	error_code;
 	u32	eip;
 	u32	cs;
 	u32	eflags;
@@ -23,6 +25,8 @@ typedef	struct	s_stack_frame{
 } STACK_FRAME;
 
 typedef	struct	s_proc{
+	// 进程内核栈， 4K
+	u8			proc_stack[PROC_STACKSIZE];
 	STACK_FRAME	regs;
 	u16			ldt_sel;
 	DESCRIPTOR	ldts[LDT_SIZE];
