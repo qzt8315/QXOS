@@ -182,9 +182,9 @@ void init_vm(){
     }
 
     // 映射显存
-    void* p_vcga = (void*)&_VCGAMEM;
-    void* p_vcgaend = (void*)&_EVCGAMEM;
-    void* p_pcga = (void*)PCGAMEM;
+    void* p_vcga = (void *)ADDR_4K_FLOOR(&_VCGAMEM);
+    void* p_vcgaend = (void*)ADDR_4K_CEIL(&_EVCGAMEM);
+    void* p_pcga = (void*)ADDR_4K_FLOOR(PCGAMEM);
     *(u16**)V2P(&pVGAMEM) = p_vcga;
     for(; p_vcga<p_vcgaend; p_vcga+=PAGESIZE, p_pcga+=PAGESIZE){
         int indexPDE = PDEINDEX(p_vcga);

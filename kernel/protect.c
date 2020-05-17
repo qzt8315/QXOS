@@ -52,26 +52,26 @@ void	init_8253();
 
 PUBLIC void exception_handler(u32 int_no, u32 error_code, u32 eip, u32 cs, u32 eflags){
 	u8 char_color = 0x74;
-	char * error_msg[] = {"#DE Divide Error",
-			"#DB RESERVED",
-			"--  NMI Interrupt",
-			"#BP Breakpoint",
-			"#OF Overflow",
-			"#BR BOUND Range Exceeded",
-			"#UD Invalid Opcode (Undefined Opcode)",
-			"#NM Device Not Available (No Math Coprocessor)",
-			"#DF Double Fault",
-			"    Coprocessor Segment Overrun(reserved)",
-			"#TS Invalid Tss",
-			"#NP Segment Not Present",
-			"#SS Stack Segment Fault",
-			"#GP General Protection",
-			"#PF Page Fault",
-			"--  (Intel reserved Do not use)",
-			"#MF x86 FPU Floating-Point Error (math fault)",
-			"#AC Alignment Check",
-			"#MC Machine Check",
-			"#XF SIMD Floating-Point Exception",
+	char * error_msg[] = {"#DE Divide Error",	// 0
+			"#DB RESERVED",						// 1
+			"--  NMI Interrupt",				// 2
+			"#BP Breakpoint",					// 3
+			"#OF Overflow",						// 4	
+			"#BR BOUND Range Exceeded",			// 5
+			"#UD Invalid Opcode (Undefined Opcode)",	//6
+			"#NM Device Not Available (No Math Coprocessor)",	//7
+			"#DF Double Fault",					// 8
+			"    Coprocessor Segment Overrun(reserved)",	//9
+			"#TS Invalid Tss",					// a
+			"#NP Segment Not Present",			// b
+			"#SS Stack Segment Fault",			// c
+			"#GP General Protection",			// d
+			"#PF Page Fault",					// e
+			"--  (Intel reserved Do not use)",	// f
+			"#MF x86 FPU Floating-Point Error (math fault)",// 10
+			"#AC Alignment Check",				// 11
+			"#MC Machine Check",				// 12
+			"#XF SIMD Floating-Point Exception",// 13
 			};
 	
 	display_str_colorful("Exception! --> ", char_color);

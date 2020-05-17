@@ -106,12 +106,6 @@ te:
 	call	kernelUnMap
 	call	cstart
 	lidt	[idt_ptr]
-	mov		eax, PAGE1DEFAULT
-	push	0
-	push	_4K
-	call	malloc
-	mov		edx, 1
-	mov		[eax], edx
 
 	; 新建进程
 	call	init_proc

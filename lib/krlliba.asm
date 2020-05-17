@@ -61,8 +61,8 @@ display_str_colorful:
 	; 字体颜色
 	mov	ah, [ebp + 12]
 .loop_show_color_str:
-	cmp	edi, PER_CHAR_LEN * LINE_CHARS * (LINES - 1)
-	ja	.show_color_str_end
+	cmp	edi, PER_CHAR_LEN * LINE_CHARS * LINES
+	jae	.show_color_str_end
 	lodsb
 	cmp	al, 0x0a
 	jz	.new_line
