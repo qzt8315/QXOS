@@ -13,6 +13,8 @@ PROC_LDT_OFF    equ 72
 ; 8259A中断处理
 ; 8259从片中断处理
 %macro  irq_master  1
+    ; 用于填充error code
+    push    0
     call    saveregs
     push    %1
     call    disableIRQ
@@ -26,6 +28,8 @@ PROC_LDT_OFF    equ 72
 
 ; 8259从片中断处理
 %macro  irq_slave   1
+    ; 用于填充error code
+    push    0
     call    saveregs
     push    %1
     call    disableIRQ

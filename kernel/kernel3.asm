@@ -73,7 +73,7 @@ saveregs:
 
 ; 切换回进程
 restart:
-	push	proc_table+72
+	push	proc_table+_4K+76
 	push	0x10
 	call	set_TSS_stack_ring0
 	add		esp, 8
@@ -81,18 +81,18 @@ restart:
 	;push	TSS_SELECTOR
 	;call	load_tss
 	;add		esp, 4
-	mov	esp, proc_table
+	mov		esp, proc_table+_4K
 	;mov	ax,	TSS_SELECTOR
 	;ltr	ax
 	;lldt	[esp+PROC_LDT_OFF]
-	mov	ax, 0x28
+	mov		ax, 0x28
 	lldt	ax
 	pop	gs
 	pop	fs
 	pop	es
 	pop	ds
 	popad
-	add	esp, 4
+	add	esp, 8
 
 	dec	dword [k_reenter]
 	iretd
@@ -103,7 +103,7 @@ re_enter:
 	pop	es
 	pop	ds
 	popad
-	add	esp, 4
+	add	esp, 8
 	dec	dword [k_reenter]
 	iretd
 

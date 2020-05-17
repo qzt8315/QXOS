@@ -9,6 +9,8 @@ global  sys_call
 align   32
 [bits   32]
 sys_call:
+    ; 用于填充error code
+    push    0
     call    saveregs
     push    eax
     call    sys_call_handler
