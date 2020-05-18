@@ -3,7 +3,6 @@
 
 ; 变量
 extern	irq_table
-extern	k_reenter
 extern  STACKTOP
 extern	proc_table
 
@@ -61,14 +60,7 @@ saveregs:
 	mov		es, bx
 	mov		ebp, esp
 
-	inc		dword [k_reenter]
-	cmp		dword [k_reenter], 1
-	jg		.re_irq
-	; mov		esp, STACKTOP
 	push	restart
-	jmp		[ebp + RETADDR_OFF]
-.re_irq:
-	push	re_enter
 	jmp		[ebp + RETADDR_OFF]
 
 ; 切换回进程
@@ -94,17 +86,6 @@ restart:
 	popad
 	add	esp, 8
 
-	dec	dword [k_reenter]
-	iretd
-
-re_enter:
-	pop	gs
-	pop	fs
-	pop	es
-	pop	ds
-	popad
-	add	esp, 8
-	dec	dword [k_reenter]
 	iretd
 
 hwint00:

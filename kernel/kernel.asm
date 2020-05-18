@@ -8,7 +8,6 @@ SELECTOR_KERNEL_CS	equ	8
 extern	cstart
 extern	gdt_ptr
 extern	idt_ptr
-extern	k_reenter
 extern	pPDETable
 
 extern	kernel_main
@@ -119,7 +118,6 @@ te:
 	add		esp, 4
 	mov		ax, 0x28
 	lldt	ax
-	inc 	dword [k_reenter]
 	mov		esp, proc_table+_4K
 	jmp		restart
 	jmp	$

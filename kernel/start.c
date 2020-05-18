@@ -17,9 +17,6 @@ PUBLIC	void	cstart(){
 	// 初始化当前显示地方
 	dis_pos = 0;
 
-	// 中断重入控制初始化
-	k_reenter = 0;
-
 	// 初始化时钟
 	ticks = 0;
 
