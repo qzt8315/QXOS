@@ -1,4 +1,5 @@
 ; 用于处理系统调用
+%include "kernel.inc"
 extern  saveregs
 extern  sys_call_handler
 extern  proc_table
@@ -15,6 +16,6 @@ sys_call:
     push    eax
     call    sys_call_handler
     add     esp, 4
-    mov     dword [proc_table + 4*11], eax
+    mov     dword [proc_table + _4K + 4*11], eax
     sti
     ret

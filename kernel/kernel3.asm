@@ -24,9 +24,6 @@ align   32
 
 global	restart
 
-sss		db 	"B"
-		db	0
-
 ; 硬件中断
 global	hwint00
 global	hwint01
