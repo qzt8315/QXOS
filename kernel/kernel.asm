@@ -89,6 +89,7 @@ global	_start
 global	load_tss
 
 _start:
+	mov		eax, USERSTACKTOP_TEMP
 	mov		esp, V2P(STACKTOP)
 	sgdt	[V2P(gdt_ptr)]
 	call	init_vm

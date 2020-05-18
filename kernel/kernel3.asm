@@ -64,7 +64,7 @@ saveregs:
 	inc		dword [k_reenter]
 	cmp		dword [k_reenter], 1
 	jg		.re_irq
-	mov		esp, STACKTOP
+	; mov		esp, STACKTOP
 	push	restart
 	jmp		[ebp + RETADDR_OFF]
 .re_irq:
