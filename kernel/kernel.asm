@@ -119,6 +119,7 @@ te:
 	mov		ax, 0x28
 	lldt	ax
 	inc 	dword [k_reenter]
+	mov		esp, proc_table+_4K
 	jmp		restart
 	jmp	$
 

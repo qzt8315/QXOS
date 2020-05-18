@@ -81,7 +81,7 @@ restart:
 	;push	TSS_SELECTOR
 	;call	load_tss
 	;add		esp, 4
-	mov		esp, proc_table+_4K
+	; mov		esp, proc_table+_4K+76
 	;mov	ax,	TSS_SELECTOR
 	;ltr	ax
 	;lldt	[esp+PROC_LDT_OFF]
