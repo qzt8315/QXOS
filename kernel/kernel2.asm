@@ -29,77 +29,93 @@ global	copr_error
 
 ; 异常处理
 divide_error:				; 0
-	push	0xffffffff
-	push	0
-	jmp	exception
+	exception_no_errorcode	0
+	; push	0xffffffff
+	; push	0
+	; jmp	exception
 
 debug_exception:			; 1
-	push	0xffffffff
-	push	1
-	jmp	exception
+	exception_no_errorcode	1
+	; push	0xffffffff
+	; push	1
+	; jmp	exception
 
 not_mask_interrupt:			; 2
-	push	0xffffffff
-	push	2
-	jmp	exception
+	exception_no_errorcode	2
+	; push	0xffffffff
+	; push	2
+	; jmp	exception
 
 bug_point:				; 3
-	push	0xffffffff
-	push	3
-	jmp	exception
+	exception_no_errorcode	3
+	; push	0xffffffff
+	; push	3
+	; jmp	exception
 
 overflow:				; 4
-	push	0xffffffff
-	push	4
-	jmp	exception
+	exception_no_errorcode	4
+	; push	0xffffffff
+	; push	4
+	; jmp	exception
 
 bounds:					; 5
-	push	0xffffffff
-	push	5
-	jmp	exception
+	exception_no_errorcode	5
+	; push	0xffffffff
+	; push	5
+	; jmp	exception
 
 invalid_opcode:				; 6
-	push	0xffffffff
-	push	6
-	jmp	exception
+	exception_no_errorcode	6
+	; push	0xffffffff
+	; push	6
+	; jmp	exception
 
 copr_not_available:			; 7
-	push	0xffffffff
-	push	7
-	jmp	exception
+	exception_no_errorcode	7
+	; push	0xffffffff
+	; push	7
+	; jmp	exception
 
 double_fault:				; 8
-	push	8
-	jmp	exception
+	exception_with_errorcode	8
+	; push	8
+	; jmp	exception
 
 copr_seg_overrun:			; 9
-	push	0xffffffff
-	push	9
-	jmp	exception
+	exception_no_errorcode	9
+	; push	0xffffffff
+	; push	9
+	; jmp	exception
 
 invalid_tss:				; a
-	push	0xa
-	jmp	exception
+	exception_with_errorcode	0xa
+	; push	0xa
+	; jmp	exception
 
 segment_not_present:		; b
-	push	0xb
-	jmp	exception
+	exception_with_errorcode	0xb
+	; push	0xb
+	; jmp	exception
 
 stack_excption:				; c
-	push	0xc
-	jmp	exception
+	exception_with_errorcode	0xc
+	; push	0xc
+	; jmp	exception
 
 general_protection:			; d
-	push	0xd
-	jmp	exception
+	exception_with_errorcode	0xd
+	; push	0xd
+	; jmp	exception
 
 page_fault:					; e
-	push	0xe
-	jmp	exception
+	exception_with_errorcode	0xe
+	; push	0xe
+	; jmp	exception
 
 copr_error:					; 10
-	push	0x10
-	jmp	exception
+	exception_no_errorcode	0x10
+	; push	0x10
+	; jmp	exception
 
 exception:
 	call	exception_handler

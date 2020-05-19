@@ -41,6 +41,16 @@ PROC_LDT_OFF    equ 72
     ret
 %endmacro
 
+%macro  exception_with_errorcode  1
+    push	%1
+	jmp	exception
+%endmacro
+
+%macro  exception_no_errorcode  1
+    push    0xffffffff
+    exception_with_errorcode %1
+%endmacro
+
 
 ; ARDS大小
 ARDS_SIZE   equ     20
