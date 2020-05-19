@@ -13,7 +13,6 @@ PUBLIC  u32 sys_call_handler(u32 sys_no){
     switch (sys_no)
     {
     case __INT_GET_TICKS:
-        display_str_colorful("+", 0x0f);
         return sys_call_get_ticks();
         break;
     

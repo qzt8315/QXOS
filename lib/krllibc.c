@@ -71,12 +71,12 @@ PUBLIC	int	Memset(void* s,int ch, int n){
 }
 
 
-unsigned int	get_ticks(){
+u32	get_ticks(){
 	int		nr_get_ticks = _NR_GET_TICKS;
 	int		n_syscall	 = INT_VECTOR_SYS_CALL;
-	unsigned int 	ret;
+	u32 	ret;
 	__asm__ __volatile__(
-		"movl %0,%%eax;"
+		"movl %1,%%eax;"
 		CALL_INT(0x80)
 		"movl %%eax, %0;":
 		"=m"(ret)

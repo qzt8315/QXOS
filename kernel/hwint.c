@@ -30,6 +30,7 @@ PUBLIC void hwint_handler(u32 hwint_no){
 }
 
 void hwint_handler_clock(){
+	display_str_colorful("*", 0x0f);
     ticks++;
 }
 

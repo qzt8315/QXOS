@@ -21,6 +21,6 @@ PUBLIC	int	Memset(void* s,int ch, int n);
 // 毫秒级延迟
 void 	delay_ms(int ms);
 
-unsigned int	get_ticks();
+u32	get_ticks();
 
 #endif
