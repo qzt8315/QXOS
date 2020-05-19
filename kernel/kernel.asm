@@ -119,7 +119,6 @@ te:
 	mov		ax, 0x28
 	lldt	ax
 	mov		esp, proc_table+_4K
-	ud2
 	jmp		restart
 	jmp	$
 

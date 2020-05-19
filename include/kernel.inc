@@ -44,10 +44,10 @@ PROC_LDT_OFF    equ 72
 %macro  exception_with_errorcode  1
     call    saveregs
     mov     ebp, esp
+    push    dword   [ebp+66]
     push    dword   [ebp+64]
     push    dword   [ebp+60]
     push    dword   [ebp+56]
-    push    dword   [ebp+52]
     push	%1
 	jmp	    exception
 %endmacro

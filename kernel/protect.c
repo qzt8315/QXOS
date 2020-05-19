@@ -51,53 +51,53 @@ void	init_8253();
 
 
 PUBLIC void exception_handler(u32 int_no, u32 error_code, u32 eip, u32 cs, u32 eflags){
-	// u8 char_color = 0x74;
-	// char * error_msg[] = {"#DE Divide Error",	// 0
-	// 		"#DB RESERVED",						// 1
-	// 		"--  NMI Interrupt",				// 2
-	// 		"#BP Breakpoint",					// 3
-	// 		"#OF Overflow",						// 4	
-	// 		"#BR BOUND Range Exceeded",			// 5
-	// 		"#UD Invalid Opcode (Undefined Opcode)",	//6
-	// 		"#NM Device Not Available (No Math Coprocessor)",	//7
-	// 		"#DF Double Fault",					// 8
-	// 		"    Coprocessor Segment Overrun(reserved)",	//9
-	// 		"#TS Invalid Tss",					// a
-	// 		"#NP Segment Not Present",			// b
-	// 		"#SS Stack Segment Fault",			// c
-	// 		"#GP General Protection",			// d
-	// 		"#PF Page Fault",					// e
-	// 		"--  (Intel reserved Do not use)",	// f
-	// 		"#MF x86 FPU Floating-Point Error (math fault)",// 10
-	// 		"#AC Alignment Check",				// 11
-	// 		"#MC Machine Check",				// 12
-	// 		"#XF SIMD Floating-Point Exception",// 13
-	// 		};
+	u8 char_color = 0x74;
+	char * error_msg[] = {"#DE Divide Error",	// 0
+			"#DB RESERVED",						// 1
+			"--  NMI Interrupt",				// 2
+			"#BP Breakpoint",					// 3
+			"#OF Overflow",						// 4	
+			"#BR BOUND Range Exceeded",			// 5
+			"#UD Invalid Opcode (Undefined Opcode)",	//6
+			"#NM Device Not Available (No Math Coprocessor)",	//7
+			"#DF Double Fault",					// 8
+			"    Coprocessor Segment Overrun(reserved)",	//9
+			"#TS Invalid Tss",					// a
+			"#NP Segment Not Present",			// b
+			"#SS Stack Segment Fault",			// c
+			"#GP General Protection",			// d
+			"#PF Page Fault",					// e
+			"--  (Intel reserved Do not use)",	// f
+			"#MF x86 FPU Floating-Point Error (math fault)",// 10
+			"#AC Alignment Check",				// 11
+			"#MC Machine Check",				// 12
+			"#XF SIMD Floating-Point Exception",// 13
+			};
 	
-	// display_str_colorful("Exception! --> ", char_color);
-	// display_str_colorful(error_msg[int_no], char_color);
-	// display_str_colorful("\n\n", char_color);
+	display_str_colorful("Exception! --> ", char_color);
+	display_str_colorful(error_msg[int_no], char_color);
+	display_str_colorful("\n\n", char_color);
 
-	// char int_str[11];
+	char int_str[11];
 
-	// display_str_colorful("EFLAGS:", char_color);
-	// uint2str(eflags, int_str);
-	// display_str_colorful(int_str, char_color);
+	display_str_colorful("EFLAGS:", char_color);
+	uint2str(eflags, int_str);
+	display_str_colorful(int_str, char_color);
 
-	// display_str_colorful("  CS:", char_color);
-	// uint2str(cs, int_str);
-	// display_str_colorful(int_str, char_color);
+	display_str_colorful("  CS:", char_color);
+	uint2str(cs, int_str);
+	display_str_colorful(int_str, char_color);
 
-	// display_str_colorful("  EIP:", char_color);
-	// uint2str(eip, int_str);
-	// display_str_colorful(int_str, char_color);
+	display_str_colorful("  EIP:", char_color);
+	uint2str(eip, int_str);
+	display_str_colorful(int_str, char_color);
 
-	// if(error_code != 0xffffffff){
-	// 	display_str_colorful("  Error code:", char_color);
-	// 	uint2str(error_code, int_str);
-	// 	display_str_colorful(int_str, char_color);
-	// }
-	// display_str_colorful("\n", char_color);
+	if(error_code != 0xffffffff){
+		display_str_colorful("  Error code:", char_color);
+		uint2str(error_code, int_str);
+		display_str_colorful(int_str, char_color);
+	}
+	display_str_colorful("\n", char_color);
 }
 
 
