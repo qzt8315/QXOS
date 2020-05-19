@@ -14,7 +14,7 @@ void display_str_colorful(char *str, u8 color);
 
 // 系统调用
 // 获取时钟中断计数
-unsigned int	get_ticks();
+// unsigned int	get_ticks();
 
 // 内存拷贝
 PUBLIC	int	Memcpy(void* pDst, void* pSrc, int len);

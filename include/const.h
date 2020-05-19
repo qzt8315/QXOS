@@ -35,4 +35,9 @@
 
 #define PROC_STACKSIZE N_4K
 
+// 获取时钟值的系统调用号
+#define	_NR_GET_TICKS 		0
+// 系统调用中断号
+#define INT_VECTOR_SYS_CALL	0x80
+
 #endif

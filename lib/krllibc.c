@@ -5,6 +5,7 @@
 #include "proc.h"
 #include "global.h"
 #include "proto.h"
+#include "krllibc.h"
 
 // 32位无符号整形转字符串(16进制)
 PUBLIC	int	uint2str(u32 num, char *str){
@@ -67,4 +68,21 @@ PUBLIC	int	Memset(void* s,int ch, int n){
 		*p_mem = v;
 	}
 	return 0;
+}
+
+
+unsigned int	get_ticks(){
+	int		nr_get_ticks = _NR_GET_TICKS;
+	int		n_syscall	 = INT_VECTOR_SYS_CALL;
+	unsigned int 	ret;
+	__asm__ __volatile__(
+		"movl %0,%%eax;"
+		CALL_INT(0x80)
+		"movl %%eax, %0;":
+		"=m"(ret)
+		:
+		"r"(nr_get_ticks)
+		:"%eax"
+	);
+	return ret;
 }
