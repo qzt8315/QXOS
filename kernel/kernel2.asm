@@ -5,6 +5,8 @@
 extern	exception_handler
 extern	proc_table
 
+extern saveregs
+
 [section .text]
 align   32
 [bits   32]
