@@ -81,19 +81,23 @@ PUBLIC void exception_handler(u32 int_no, u32 error_code, u32 eip, u32 cs, u32 e
 	char int_str[11];
 
 	display_str_colorful("EFLAGS:", char_color);
+	Memset(int_str, 0, 11);
 	uint2str(eflags, int_str);
 	display_str_colorful(int_str, char_color);
 
 	display_str_colorful("  CS:", char_color);
+	Memset(int_str, 0, 11);
 	uint2str(cs, int_str);
 	display_str_colorful(int_str, char_color);
 
 	display_str_colorful("  EIP:", char_color);
+	Memset(int_str, 0, 11);
 	uint2str(eip, int_str);
 	display_str_colorful(int_str, char_color);
 
 	if(error_code != 0xffffffff){
 		display_str_colorful("  Error code:", char_color);
+		Memset(int_str, 0, 11);
 		uint2str(error_code, int_str);
 		display_str_colorful(int_str, char_color);
 	}
