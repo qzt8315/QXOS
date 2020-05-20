@@ -1,11 +1,24 @@
 // 汇编语言入口
 // 首先移植较为简单的kernel4.asm(系统调用)
+// 已移植kernel.asm
 #include "syscall.h"
 #include "const.h"
 
-.extern    saveregs
-.extern    sys_call_handler
-.extern    proc_table
+// 汇编中使用到的宏
+#define  V2P_(vaddr)   (vaddr+K_P_BASE_ADDR-K_V_BASE_ADDR)
+#define  TSS_SELECTOR   0x20
+
+.extern     gdt_ptr
+.extern     idt_ptr
+
+.extern     saveregs
+.extern     sys_call_handler
+.extern     proc_table
+.extern	   init_vm
+.extern     kernelUnMap
+.extern     cstart
+.extern     init_proc
+.extern     restart
 
 .section .text
 .code32
@@ -13,9 +26,42 @@
 
 
 .global     sys_call_entry
+.global     _start
 
 // 内核入口
+_start:
+   movl  $V2P_(STACKTOP), %esp
+   sgdt  V2P_(gdt_ptr)
+   call  init_vm
+   movl  V2P_(pPDETable), %eax
+   orl   $8, %eax
+   movl  %eax, %cr3
+   lgdt  (gdt_ptr)
+   // 切换堆栈
+   movl  $STACKTOP, %esp
+   ljmp  $8,$te
+te:
+   call  kernelUnMap
+   call  cstart
+   lidt  (idt_ptr)
 
+   // 创建新进程
+   call  init_proc
+   pushl $TSS_SELECTOR
+   call  load_tss
+   addl  $4, %esp
+   movw  $0x28, %ax
+   lldt  %ax
+   movl  $(proc_table+N_4K), %esp
+   jmp   restart
+
+load_tss:
+   ltr   4(%esp)
+   ret
+
+load_ldt:
+   lldt  4(%esp)
+   ret
 
 // 系统中断调用入口
 sys_call_entry:
@@ -29,6 +75,16 @@ sys_call_entry:
    sti
    ret
 
+
+
+
+
+// ----------------------------
+// bss段数据
+// 主要存放内核中使用到的变量
+//
+//
+// ----------------------------
 .section .bss
 .align 4
 

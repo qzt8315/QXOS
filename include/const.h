@@ -60,4 +60,9 @@
 // 页条目大小
 #define PAGEITEMSIZE    4
 
+// 内核实际加载基址 1M
+#define K_P_BASE_ADDR	0x100000
+// 内核空间虚拟地址基址 3G
+#define K_V_BASE_ADDR	0xc0000000
+
 #endif

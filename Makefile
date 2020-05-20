@@ -15,15 +15,15 @@ CC			= gcc
 LD			= ld
 ASMBFLAGS		= -I boot/include/
 ASMKFLAGS		= -I include/ -f elf
-CFLAGS			= -I include/ -m32 -c -fno-builtin
+CFLAGS			= -I include/ -m32 -c -O0 -fno-builtin
 LDFLAGS			= -s -m elf_i386 -T$(LINKSCRIPT)
 DASMFLAGS		= -u -o $(KRLENTRYPOINT) -e $(KRLENTRYOFFSET)
 
 # This Program
 QXOSBOOT		= boot/boot.img boot/LOADER.BIN
 QXOSKERNEL		= kernel/QXOSKRL.BIN
-OBJS			= kernel/kernel.o kernel/kernel2.o kernel/kernel3.o \
-					kernel/entry.o kernel/start.o kernel/i8259.o \
+OBJS			= kernel/entry.o kernel/kernel2.o kernel/kernel3.o \
+					kernel/start.o kernel/i8259.o \
 					kernel/global.o kernel/protect.o kernel/hwint.o \
 					kernel/proc.o kernel/vm.o kernel/main.o \
 					kernel/syscall.o lib/krllibc.o lib/krlliba.o
