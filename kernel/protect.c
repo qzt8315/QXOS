@@ -45,7 +45,7 @@ void	hwint14();
 void	hwint15();
 
 // 系统调用
-void	sys_call();
+void	sys_call_entry();
 // 
 void	init_8253();
 
@@ -211,7 +211,7 @@ PUBLIC	void init_prot(){
 
 	// 开启系统调用
 	init_idt_desc(0x80,		DA_386IGate,
-			sys_call,			PRIVILEGY_USER);
+			sys_call_entry,	PRIVILEGY_USER);
 }
 
 

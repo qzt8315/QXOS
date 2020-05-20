@@ -23,7 +23,7 @@ DASMFLAGS		= -u -o $(KRLENTRYPOINT) -e $(KRLENTRYOFFSET)
 QXOSBOOT		= boot/boot.img boot/LOADER.BIN
 QXOSKERNEL		= kernel/QXOSKRL.BIN
 OBJS			= kernel/kernel.o kernel/kernel2.o kernel/kernel3.o \
-					kernel/kernel4.o kernel/start.o kernel/i8259.o \
+					kernel/entry.o kernel/start.o kernel/i8259.o \
 					kernel/global.o kernel/protect.o kernel/hwint.o \
 					kernel/proc.o kernel/vm.o kernel/main.o \
 					kernel/syscall.o lib/krllibc.o lib/krlliba.o
@@ -78,6 +78,9 @@ kernel/kernel3.o: kernel/kernel3.asm include/kernel.inc
 
 kernel/kernel4.o: kernel/kernel4.asm include/kernel.inc
 	$(ASM) $(ASMKFLAGS) -o $@ $<
+
+kernel/entry.o : kernel/entry.S
+	$(CC) $(CFLAGS) -o $@ $<
 
 lib/krlliba.o : lib/krlliba.asm
 	$(ASM) $(ASMKFLAGS) -o $@ $<
