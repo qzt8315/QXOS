@@ -33,6 +33,10 @@
 #define PCGAMEM     0xb8000
 #define EPCGAMEM    0xc0000
 
+// 4K
+#define N_4K                0x1000
+
+
 #define PROC_STACKSIZE N_4K
 
 // 获取时钟值的系统调用号

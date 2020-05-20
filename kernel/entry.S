@@ -18,7 +18,7 @@
    pushl   %eax
    call    sys_call_handler
    add     $4, %esp
-   movl    %eax, (proc_table + 0x1000 + 4*11)
+   movl    %eax, (proc_table + N_4K + 4*11)
    sti
    ret
     
