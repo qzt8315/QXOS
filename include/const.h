@@ -44,4 +44,20 @@
 // 系统调用中断号
 #define INT_VECTOR_SYS_CALL	0x80
 
+//系统栈大小 
+#define STACK_SIZE  1024
+
+// ARDS大小
+#define ARDS_SIZE   20
+// ARDS数量
+#define ARDS_COUNT  20
+
+// 内核虚拟地址空间
+// VKRLADDRSIZE    equ     0x40000000
+#define VKRLADDRSIZE    (1<<30)
+
+
+// 页条目大小
+#define PAGEITEMSIZE    4
+
 #endif

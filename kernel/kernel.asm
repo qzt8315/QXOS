@@ -10,6 +10,24 @@ extern	gdt_ptr
 extern	idt_ptr
 extern	pPDETable
 
+extern	STACKTOP
+extern	ARDS_SPACE
+extern	PAGESPACE
+extern	_EPAGESPACE
+extern	USERSTACKTOP_TEMP
+
+extern	PAGE1DEFAULT
+extern	PAGE2DEFAULT
+extern	PAGE4DEFAULT
+extern	PAGE8DEFAULT
+extern	PAGE16DEFAULT
+extern	PAGE32DEFAULT
+extern	PAGE64DEFAULT
+extern	PAGE128DEFAULT
+extern	PAGE256DEFAULT
+extern	PAGE512DEFAULT
+extern	PAGE1024DEFAULT
+
 extern	kernel_main
 
 extern	init_proc
@@ -19,66 +37,6 @@ extern	init_vm
 extern	kernelUnMap
 extern	malloc
 
-; 内核栈
-[section .bss]
-global	STACKTOP
-global	ARDS_SPACE
-global	PAGESPACE
-global	_EPAGESPACE
-global	USERSTACKTOP_TEMP
-
-global	PAGE1DEFAULT
-global	PAGE2DEFAULT
-global	PAGE4DEFAULT
-global	PAGE8DEFAULT
-global	PAGE16DEFAULT
-global	PAGE32DEFAULT
-global	PAGE64DEFAULT
-global	PAGE128DEFAULT
-global	PAGE256DEFAULT
-global	PAGE512DEFAULT
-global	PAGE1024DEFAULT
-
-STACKSPACE:	resb	STACK_SIZE
-STACKTOP:
-ARDS_SPACE:	resb	ARDS_SIZE*ARDS_COUNT
-PAGESPACE:	resb	(VKRLADDRSIZE+VKRLADDRSIZE)/_4K*PAGEITEMSIZE
-_EPAGESPACE:
-USERSTACK_TEMP:	resb	_4K
-USERSTACKTOP_TEMP:
-; 用于管理空余内存
-; 保存1个页帧,默认区域,不够后期拓展
-PAGE1DEFAULT:resb	_4K
-
-; 保存2个页帧,默认区域,不够后期拓展
-PAGE2DEFAULT:resb	_4K
-
-; 保存4个页帧,默认区域,不够后期拓展
-PAGE4DEFAULT:		resb	_4K
-
-; 保存8个页帧,默认区域,不够后期拓展
-PAGE8DEFAULT:		resb	_4K
-
-; 保存16个页帧,默认区域,不够后期拓展
-PAGE16DEFAULT:		resb	_4K
-
-; 保存32个页帧,默认区域,不够后期拓展
-PAGE32DEFAULT:		resb	_4K
-
-; 保存64个页帧,默认区域,不够后期拓展
-PAGE64DEFAULT:		resb	_4K
-
-; 保存128个页帧,默认区域,不够后期拓展
-PAGE128DEFAULT:		resb	_4K
-
-; 保存256个页帧,默认区域,不够后期拓展
-PAGE256DEFAULT:		resb	_4K
-
-; 保存512个页帧,默认区域,不够后期拓展
-PAGE512DEFAULT:		resb	_4K
-
-; 保存1024个页帧,默认区域,不够后期拓展
-PAGE1024DEFAULT:	resb	_4K
 
 [section .text]
 align   32
