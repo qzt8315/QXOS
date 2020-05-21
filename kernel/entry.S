@@ -20,47 +20,49 @@
 .extern     restart
 .extern     load_tss
 .extern     load_ldt
+.extern     set_TSS_stack_ring0
+.extern     context_switch
 
 // 汇编中使用到的宏
 #define  TSS_SELECTOR   0x20
 #define  V2P_(vaddr)   (vaddr+K_P_BASE_ADDR-K_V_BASE_ADDR)
 #define  exception_with_errorcode(ex_code)   \
-   call     saveregs;      \
-   movl     %esp, %ebp;    \
-   pushl    68(%ebp);      \
-   pushl    64(%ebp);      \
-   pushl    60(%ebp);      \
-   pushl    56(%ebp);      \
-   pushl    $ex_code;      \
-   jmp      exception;
+    call     saveregs;      \
+    movl     %esp, %ebp;    \
+    pushl    68(%ebp);      \
+    pushl    64(%ebp);      \
+    pushl    60(%ebp);      \
+    pushl    56(%ebp);      \
+    pushl    $ex_code;      \
+    jmp      exception;
 
 #define  exception_no_errorcode(ex_code)     \
-   pushl    $0xffffffff;               \
-   exception_with_errorcode(ex_code);
+    pushl    $0xffffffff;               \
+    exception_with_errorcode(ex_code);
 
 #define  irq_master(irq_code)       \
-   pushl    $0;             \
-   call     saveregs;       \
-   pushl    $irq_code;      \
-   call     disableIRQ;     \
-   call     sendEOI2Master; \
-   sti;                     \
-   call     hwint_handler;  \
-   call     enableIRQ;      \
-   addl     $4, %esp;       \
-   ret;
+    pushl    $0;             \
+    call     saveregs;       \
+    pushl    $irq_code;      \
+    call     disableIRQ;     \
+    call     sendEOI2Master; \
+    sti;                     \
+    call     hwint_handler;  \
+    call     enableIRQ;      \
+    addl     $4, %esp;       \
+    ret;
 
 #define  irq_slave(irq_code)        \
-   pushl    $0;             \
-   call     saveregs;       \
-   pushl    $irq_code;      \
-   call     disableIRQ;     \
-   call     sendEOI2Slave;  \
-   sti;                     \
-   call     hwint_handler;  \
-   call     enableIRQ;      \
-   addl     $4, %esp;       \
-   ret;
+    pushl    $0;             \
+    call     saveregs;       \
+    pushl    $irq_code;      \
+    call     disableIRQ;     \
+    call     sendEOI2Slave;  \
+    sti;                     \
+    call     hwint_handler;  \
+    call     enableIRQ;      \
+    addl     $4, %esp;       \
+    ret;
 
 .section .text
 .code32
@@ -73,30 +75,36 @@
 // 内核入口
 // --------------------------
 _start:
-   movl  $V2P_(STACKTOP), %esp
-   sgdt  V2P_(gdt_ptr)
-   call  init_vm
-   movl  V2P_(pPDETable), %eax
-   orl   $8, %eax
-   movl  %eax, %cr3
-   lgdt  (gdt_ptr)
-   // 切换堆栈
-   movl  $STACKTOP, %esp
-   ljmp  $8,$te
-te:
-   call  kernelUnMap
-   call  cstart
-   lidt  (idt_ptr)
+    movl  $V2P_(STACKTOP), %esp
+    sgdt  V2P_(gdt_ptr)
+    call  init_vm
+    movl  V2P_(pPDETable), %eax
+    orl   $8, %eax
+    movl  %eax, %cr3
+    lgdt  (gdt_ptr)
+    // 切换堆栈
+    movl  $STACKTOP, %esp
+    ljmp  $8,$te
+    te:
+    call  kernelUnMap
+    call  cstart
+    lidt  (idt_ptr)
 
-   // 创建新进程
-   call  init_proc
-   pushl $TSS_SELECTOR
-   call  load_tss
-   addl  $4, %esp
-   movw  $0x28, %ax
-   lldt  %ax
-   movl  $(proc_table+N_4K), %esp
-   jmp   restart
+    // 创建新进程
+    call  init_proc
+    pushl $TSS_SELECTOR
+    call  load_tss
+    addl  $4, %esp
+    movw  $0x28, %ax
+    lldt  %ax
+    pushl    $(proc_table+N_4K+76)
+    pushl    $0x10
+    call     set_TSS_stack_ring0
+   
+    movl  $(proc_table+N_4K), %esp
+    // jmp   restart
+    pushl   $proc_table
+    call    context_switch
 
 
 
@@ -121,7 +129,7 @@ te:
 .global	copr_error
 
 divide_error:
-   exception_no_errorcode(0)
+    exception_no_errorcode(0)
 
 debug_exception:			   // 1
 	exception_no_errorcode(1)
@@ -237,14 +245,14 @@ hwint15:
 // ------------------------
 sys_call_entry:
     // 填充对系统调用中无用的errorcode
-   pushl   $0
-   call    saveregs
-   pushl   %eax
-   call    sys_call_handler
-   add     $4, %esp
-   movl    %eax, (proc_table + N_4K + 4*11)
-   sti
-   ret
+    pushl   $0
+    call    saveregs
+    pushl   %eax
+    call    sys_call_handler
+    add     $4, %esp
+    movl    %eax, (proc_table + N_4K + 4*11)
+    sti
+    ret
 
 
 

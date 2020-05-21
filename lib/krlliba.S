@@ -24,7 +24,7 @@
 .global     restart
 .global     load_tss
 .global     load_ldt
-// .global     display_str_colorful
+.global     context_switch
 
 // 向端口中写入字节
 // void out_byte(u16 port, u8 b_byte)
@@ -71,14 +71,14 @@ saveregs:
 // void context_switch(PROCESS* nextProc);
 context_switch:
     movl    4(%esp), %eax
-    addl    $(N_4K+76), %eax
+    addl    $N_4K, %eax
     movl    %eax, %esp
-    pop      %gs
-    pop      %fs
-    pop      %es
-    pop      %ds
+    pop     %gs
+    pop     %fs
+    pop     %es
+    pop     %ds
     popal
-    addl     $8, %esp
+    addl    $8, %esp
     iret
 
 
