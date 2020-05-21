@@ -22,7 +22,7 @@ extern	load_tss
 align   32
 [bits   32]
 
-global	restart
+extern	restart
 
 ; 硬件中断
 global	hwint00
@@ -41,49 +41,49 @@ global	hwint12
 global	hwint13
 global	hwint14
 global	hwint15
-global	saveregs
+extern	saveregs
 
-saveregs:
-	; 保存寄存器的值
-	pushad
-	push	ds
-	push	es
-	push	fs
-	push	gs
+; saveregs:
+; 	; 保存寄存器的值
+; 	pushad
+; 	push	ds
+; 	push	es
+; 	push	fs
+; 	push	gs
 
-	; 切换到内核栈
-	mov		bx, ss
-	mov		ds, bx
-	mov		es, bx
-	mov		ebp, esp
+; 	; 切换到内核栈
+; 	mov		bx, ss
+; 	mov		ds, bx
+; 	mov		es, bx
+; 	mov		ebp, esp
 
-	push	restart
-	jmp		[ebp + RETADDR_OFF]
+; 	push	restart
+; 	jmp		[ebp + RETADDR_OFF]
 
-; 切换回进程
-restart:
-	push	proc_table+_4K+76
-	push	0x10
-	call	set_TSS_stack_ring0
-	add		esp, 8
-	; 注意不能重复加载同一个tss,会导致加载失败，同时
-	;push	TSS_SELECTOR
-	;call	load_tss
-	;add		esp, 4
-	; mov		esp, proc_table+_4K+76
-	;mov	ax,	TSS_SELECTOR
-	;ltr	ax
-	;lldt	[esp+PROC_LDT_OFF]
-	mov		ax, 0x28
-	lldt	ax
-	pop	gs
-	pop	fs
-	pop	es
-	pop	ds
-	popad
-	add	esp, 8
+; ; 切换回进程
+; restart:
+; 	push	proc_table+_4K+76
+; 	push	0x10
+; 	call	set_TSS_stack_ring0
+; 	add		esp, 8
+; 	; 注意不能重复加载同一个tss,会导致加载失败，同时
+; 	;push	TSS_SELECTOR
+; 	;call	load_tss
+; 	;add		esp, 4
+; 	; mov		esp, proc_table+_4K+76
+; 	;mov	ax,	TSS_SELECTOR
+; 	;ltr	ax
+; 	;lldt	[esp+PROC_LDT_OFF]
+; 	mov		ax, 0x28
+; 	lldt	ax
+; 	pop	gs
+; 	pop	fs
+; 	pop	es
+; 	pop	ds
+; 	popad
+; 	add	esp, 8
 
-	iretd
+; 	iretd
 
 hwint00:
     irq_master  0

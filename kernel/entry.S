@@ -8,6 +8,7 @@
 // 汇编中使用到的宏
 #define  V2P_(vaddr)   (vaddr+K_P_BASE_ADDR-K_V_BASE_ADDR)
 #define  TSS_SELECTOR   0x20
+#define  RETADDR_OFF    48
 #define  exception_with_errorcode(ex_code)   \
    call     saveregs;      \
    movl     %esp, %ebp;    \
@@ -25,14 +26,14 @@
 .extern     gdt_ptr
 .extern     idt_ptr
 
-.extern     saveregs
+// .extern     saveregs
 .extern     sys_call_handler
 .extern     proc_table
 .extern	   init_vm
 .extern     kernelUnMap
 .extern     cstart
 .extern     init_proc
-.extern     restart
+// .extern     restart
 
 .section .text
 .code32
@@ -41,6 +42,8 @@
 
 .global     sys_call_entry
 .global     _start
+.global     saveregs
+.global     restart
 // --------------------------
 // 内核入口
 // --------------------------
@@ -78,6 +81,37 @@ load_ldt:
    lldt  4(%esp)
    ret
 
+// 保存寄存器的值
+saveregs:
+	pushal
+	push	%ds
+	push	%es
+	push	%fs
+	push	%gs
+
+   movw  %ss, %bx
+   movw  %bx, %ds
+   movw  %bx, %es
+   movl  %esp, %ebp
+
+   pushl $restart
+   jmp   *RETADDR_OFF(%ebp)
+
+// 切换进程
+restart:
+   pushl    $(proc_table+N_4K+76)
+   pushl    $0x10
+   call     set_TSS_stack_ring0
+   addl     $8, %esp
+   movw     $0x28, %ax
+   lldt     %ax
+   pop      %gs
+   pop      %fs
+   pop      %es
+   pop      %ds
+   popal
+   addl     $8, %esp
+   iret
 
 
 // ------------------------
