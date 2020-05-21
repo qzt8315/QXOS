@@ -15,7 +15,7 @@ CC			= gcc
 LD			= ld
 ASMBFLAGS		= -I boot/include/
 ASMKFLAGS		= -I include/ -f elf
-CFLAGS			= -I include/ -m32 -c -O0 -fno-builtin
+CFLAGS			= -I include/ -m32 -c -fno-builtin
 LDFLAGS			= -s -m elf_i386 -T$(LINKSCRIPT)
 DASMFLAGS		= -u -o $(KRLENTRYPOINT) -e $(KRLENTRYOFFSET)
 

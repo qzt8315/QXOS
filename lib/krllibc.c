@@ -6,6 +6,7 @@
 #include "global.h"
 #include "proto.h"
 #include "krllibc.h"
+#include "cga.h"
 
 // 32位无符号整形转字符串(16进制)
 PUBLIC	int	uint2str(u32 num, char *str){
@@ -85,4 +86,29 @@ u32	get_ticks(){
 		:"%eax"
 	);
 	return ret;
+}
+
+
+
+
+extern	GMCHAR	_VCGAMEM;
+// void	disp_str_color(char* str, u8 color){
+void	display_str_colorful(char* str, u8 color){
+	if(str == NULL || dis_pos >= CGA_CHARS_LINE * CGA_LINES){
+		return;
+	}
+	while(*str != 0 && dis_pos < CGA_CHARS_LINE * CGA_LINES){
+		// 换行
+		if(*str == '\n'){
+			dis_pos = dis_pos-dis_pos%CGA_CHARS_LINE+CGA_CHARS_LINE;
+			str++;
+			continue;
+		}
+		int	row	=	dis_pos/CGA_CHARS_LINE;
+		int col	= 	dis_pos%CGA_CHARS_LINE;
+		pVGAMEM[row][col].ch = *str;
+		pVGAMEM[row][col].color = color;
+		str++;
+		dis_pos++;
+	}
 }

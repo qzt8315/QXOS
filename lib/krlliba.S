@@ -12,7 +12,7 @@
 
 .global     out_byte
 .global     in_byte
-.global     display_str_colorful
+// .global     display_str_colorful
 
 // 向端口中写入字节
 // void out_byte(u16 port, u8 b_byte)
@@ -37,63 +37,4 @@ in_byte:
     nop
     nop
     popl    %edx
-    ret
-
-
-// 显示彩色文字
-// void display_str_colorful(char *str, u8 color)
-display_str_colorful:
-    pushl   %ebp
-    movl    %esp, %ebp
-    pushl   %edi
-    pushl   %esi
-    pushl   %eax
-    pushl   %ebx
-    pushl   %edx
-    pushl   %ecx
-
-    // 显存位置
-    movl    (dis_pos), %edi
-    // 字符串位置
-    movl    8(%ebp), %esi
-    cmpl    $0, %esi
-    jz      .show_color_str_end
-    // 字体颜色
-    movb    12(%ebp), %ah
-.loop_show_color_str:
-    cmpl    $(PER_CHAR_LEN * LINE_CHARS * LINES), %edi
-    jae     .show_color_str_end
-    lodsb
-    cmpb    $0x0a, %al
-    jz      .new_line
-    cmpb    $0, %al
-    jz      .show_color_str_end
-    addl    (pVGAMEM), %edi
-    movw    %ax, (%edi)
-    subl    (pVGAMEM), %edi
-    addl    $PER_CHAR_LEN, %edi
-    jmp     .show_next_char
-.new_line:
-    pushl   %eax
-    movl    %edi, %eax
-    movw    $(PER_CHAR_LEN * LINE_CHARS), %bx
-    divb    %bl
-    addb    $1, %al
-    movw    $(PER_CHAR_LEN * LINE_CHARS), %bx
-    mulb    %bl
-    movzx   %ax, %edi
-    popl    %eax
-
-.show_next_char:
-    jmp     .loop_show_color_str
-
-.show_color_str_end:
-    movl    %edi, (dis_pos)
-    popl    %ecx
-    popl    %edx
-    popl    %ebx
-    popl    %eax
-    popl    %esi
-    popl    %edi
-    popl    %ebp
     ret

@@ -65,4 +65,8 @@
 // 内核空间虚拟地址基址 3G
 #define K_V_BASE_ADDR	0xc0000000
 
+// CGA彩色字符显示
+#define CGA_LINES       25
+#define CGA_CHARS_LINE  80
+
 #endif

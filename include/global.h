@@ -10,6 +10,7 @@
 #include "protect.h"
 #include "proc.h"
 #include "vm.h"
+#include "cga.h"
 
 // gdt
 EXTERN	u8		gdt_ptr[6];
@@ -55,4 +56,4 @@ EXTERN PDE*     pPDETable;
 EXTERN  BUDDYBLOCK* pBuddyBlocks[11];
 
 // 指向显存地址
-EXTERN u16*     pVGAMEM;
+EXTERN GMCHAR   (*pVGAMEM)[CGA_CHARS_LINE];
