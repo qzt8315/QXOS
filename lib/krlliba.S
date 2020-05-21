@@ -51,14 +51,13 @@ in_byte:
     popl    %edx
     ret
 
-
 // 保存寄存器的值
 saveregs:
-	pushal
-	push	%ds
-	push	%es
-	push	%fs
-	push	%gs
+    pushal
+    push	%ds
+    push	%es
+    push	%fs
+    push	%gs
 
     movw  %ss, %bx
     movw  %bx, %ds
@@ -68,27 +67,42 @@ saveregs:
     pushl $restart
     jmp   *RETADDR_OFF(%ebp)
 
+// 切换上下文
+// void context_switch(PROCESS* nextProc);
+context_switch:
+    movl    4(%esp), %eax
+    addl    $(N_4K+76), %eax
+    movl    %eax, %esp
+    pop      %gs
+    pop      %fs
+    pop      %es
+    pop      %ds
+    popal
+    addl     $8, %esp
+    iret
+
+
 // 切换进程
 restart:
-   pushl    $(proc_table+N_4K+76)
-   pushl    $0x10
-   call     set_TSS_stack_ring0
-   addl     $8, %esp
-   movw     $0x28, %ax
-   lldt     %ax
-   pop      %gs
-   pop      %fs
-   pop      %es
-   pop      %ds
-   popal
-   addl     $8, %esp
-   iret
+    pushl    $(proc_table+N_4K+76)
+    pushl    $0x10
+    call     set_TSS_stack_ring0
+    addl     $8, %esp
+    movw     $0x28, %ax
+    lldt     %ax
+    pop      %gs
+    pop      %fs
+    pop      %es
+    pop      %ds
+    popal
+    addl     $8, %esp
+    iret
 
 
 load_tss:
-   ltr   4(%esp)
-   ret
+    ltr   4(%esp)
+    ret
 
 load_ldt:
-   lldt  4(%esp)
-   ret
+    lldt  4(%esp)
+    ret
