@@ -1,10 +1,18 @@
 // 内核中需要汇编实现的函数
+#include    "const.h"
+
+
 .extern     dis_pos
 .extern     pVGAMEM
+.extern     proc_table
+
+
+.extern     set_TSS_stack_ring0
 
 #define	PER_CHAR_LEN	2
 #define	LINE_CHARS	    80
 #define	LINES		    25
+#define  RETADDR_OFF    48
 
 .section    .text
 .code32
@@ -12,6 +20,10 @@
 
 .global     out_byte
 .global     in_byte
+.global     saveregs
+.global     restart
+.global     load_tss
+.global     load_ldt
 // .global     display_str_colorful
 
 // 向端口中写入字节
@@ -38,3 +50,45 @@ in_byte:
     nop
     popl    %edx
     ret
+
+
+// 保存寄存器的值
+saveregs:
+	pushal
+	push	%ds
+	push	%es
+	push	%fs
+	push	%gs
+
+    movw  %ss, %bx
+    movw  %bx, %ds
+    movw  %bx, %es
+    movl  %esp, %ebp
+
+    pushl $restart
+    jmp   *RETADDR_OFF(%ebp)
+
+// 切换进程
+restart:
+   pushl    $(proc_table+N_4K+76)
+   pushl    $0x10
+   call     set_TSS_stack_ring0
+   addl     $8, %esp
+   movw     $0x28, %ax
+   lldt     %ax
+   pop      %gs
+   pop      %fs
+   pop      %es
+   pop      %ds
+   popal
+   addl     $8, %esp
+   iret
+
+
+load_tss:
+   ltr   4(%esp)
+   ret
+
+load_ldt:
+   lldt  4(%esp)
+   ret

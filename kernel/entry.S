@@ -1,8 +1,4 @@
-// 汇编语言入口
-// 首先移植较为简单的kernel4.asm(系统调用)
-// 已移植kernel.asm
-// 已移植kernel2.asm
-// 已移植kernel3.asm
+// 汇编语言入口,只作为内核入口、系统调用入口、异常处理入口、硬件中断入口
 #include "syscall.h"
 #include "const.h"
 
@@ -20,11 +16,14 @@
 .extern     sendEOI2Master
 .extern     sendEOI2Slave
 .extern     hwint_handler
+.extern     saveregs
+.extern     restart
+.extern     load_tss
+.extern     load_ldt
 
 // 汇编中使用到的宏
-#define  V2P_(vaddr)   (vaddr+K_P_BASE_ADDR-K_V_BASE_ADDR)
 #define  TSS_SELECTOR   0x20
-#define  RETADDR_OFF    48
+#define  V2P_(vaddr)   (vaddr+K_P_BASE_ADDR-K_V_BASE_ADDR)
 #define  exception_with_errorcode(ex_code)   \
    call     saveregs;      \
    movl     %esp, %ebp;    \
@@ -70,8 +69,6 @@
 
 .global     sys_call_entry
 .global     _start
-.global     saveregs
-.global     restart
 // --------------------------
 // 内核入口
 // --------------------------
@@ -101,45 +98,6 @@ te:
    movl  $(proc_table+N_4K), %esp
    jmp   restart
 
-load_tss:
-   ltr   4(%esp)
-   ret
-
-load_ldt:
-   lldt  4(%esp)
-   ret
-
-// 保存寄存器的值
-saveregs:
-	pushal
-	push	%ds
-	push	%es
-	push	%fs
-	push	%gs
-
-   movw  %ss, %bx
-   movw  %bx, %ds
-   movw  %bx, %es
-   movl  %esp, %ebp
-
-   pushl $restart
-   jmp   *RETADDR_OFF(%ebp)
-
-// 切换进程
-restart:
-   pushl    $(proc_table+N_4K+76)
-   pushl    $0x10
-   call     set_TSS_stack_ring0
-   addl     $8, %esp
-   movw     $0x28, %ax
-   lldt     %ax
-   pop      %gs
-   pop      %fs
-   pop      %es
-   pop      %ds
-   popal
-   addl     $8, %esp
-   iret
 
 
 // ------------------------
