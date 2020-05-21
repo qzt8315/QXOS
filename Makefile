@@ -22,7 +22,7 @@ DASMFLAGS		= -u -o $(KRLENTRYPOINT) -e $(KRLENTRYOFFSET)
 # This Program
 QXOSBOOT		= boot/boot.img boot/LOADER.BIN
 QXOSKERNEL		= kernel/QXOSKRL.BIN
-OBJS			= kernel/entry.o kernel/kernel2.o kernel/kernel3.o \
+OBJS			= kernel/entry.o kernel/kernel3.o \
 					kernel/start.o kernel/i8259.o \
 					kernel/global.o kernel/protect.o kernel/hwint.o \
 					kernel/proc.o kernel/vm.o kernel/main.o \
