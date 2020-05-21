@@ -2,8 +2,24 @@
 // 首先移植较为简单的kernel4.asm(系统调用)
 // 已移植kernel.asm
 // 已移植kernel2.asm
+// 已移植kernel3.asm
 #include "syscall.h"
 #include "const.h"
+
+.extern     gdt_ptr
+.extern     idt_ptr
+
+.extern     sys_call_handler
+.extern     proc_table
+.extern	   init_vm
+.extern     kernelUnMap
+.extern     cstart
+.extern     init_proc
+.extern     enableIRQ
+.extern     disableIRQ
+.extern     sendEOI2Master
+.extern     sendEOI2Slave
+.extern     hwint_handler
 
 // 汇编中使用到的宏
 #define  V2P_(vaddr)   (vaddr+K_P_BASE_ADDR-K_V_BASE_ADDR)
@@ -23,17 +39,29 @@
    pushl    $0xffffffff;               \
    exception_with_errorcode(ex_code);
 
-.extern     gdt_ptr
-.extern     idt_ptr
+#define  irq_master(irq_code)       \
+   pushl    $0;             \
+   call     saveregs;       \
+   pushl    $irq_code;      \
+   call     disableIRQ;     \
+   call     sendEOI2Master; \
+   sti;                     \
+   call     hwint_handler;  \
+   call     enableIRQ;      \
+   addl     $4, %esp;       \
+   ret;
 
-// .extern     saveregs
-.extern     sys_call_handler
-.extern     proc_table
-.extern	   init_vm
-.extern     kernelUnMap
-.extern     cstart
-.extern     init_proc
-// .extern     restart
+#define  irq_slave(irq_code)        \
+   pushl    $0;             \
+   call     saveregs;       \
+   pushl    $irq_code;      \
+   call     disableIRQ;     \
+   call     sendEOI2Slave;  \
+   sti;                     \
+   call     hwint_handler;  \
+   call     enableIRQ;      \
+   addl     $4, %esp;       \
+   ret;
 
 .section .text
 .code32
@@ -188,6 +216,61 @@ exception:
 	iret
 
 
+
+
+
+// ----------------------
+// 硬件中断处理入口
+// ----------------------
+.global	hwint00
+.global	hwint01
+.global	hwint02
+.global	hwint03
+.global	hwint04
+.global	hwint05
+.global	hwint06
+.global	hwint07
+.global	hwint08
+.global	hwint09
+.global	hwint10
+.global	hwint11
+.global	hwint12
+.global	hwint13
+.global	hwint14
+.global	hwint15
+
+hwint00:
+    irq_master(0)
+hwint01:
+    irq_master(1)
+hwint02:
+    irq_master(2)
+hwint03:
+    irq_master(3)
+hwint04:
+    irq_master(4)
+hwint05:
+    irq_master(5)
+hwint06:
+    irq_master(6)
+hwint07:
+    irq_master(7)
+hwint08:
+    irq_slave(8)
+hwint09:
+    irq_slave(9)
+hwint10:
+    irq_slave(10)
+hwint11:
+    irq_slave(11)
+hwint12:
+    irq_slave(12)
+hwint13:
+    irq_slave(13)
+hwint14:
+    irq_slave(14)
+hwint15:
+    irq_slave(15)
 
 
 
