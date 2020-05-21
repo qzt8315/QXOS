@@ -27,7 +27,7 @@ OBJS			= kernel/entry.o \
 					kernel/global.o kernel/protect.o kernel/hwint.o \
 					kernel/proc.o kernel/vm.o kernel/main.o \
 					kernel/syscall.o lib/krllibc.o \
-					lib/krlliba1.o
+					lib/krlliba.o
 DASMOUTPUT		= kernel.bin.asm
 
 # All phony targets
@@ -68,26 +68,11 @@ boot/boot.img: boot/boot.asm boot/include/define.inc
 boot/LOADER.BIN: boot/loader.asm boot/include/define.inc
 	$(ASM) $(ASMBFLAGS) -o $@ $<
 
-kernel/kernel.o: kernel/kernel.asm include/kernel.inc
-	$(ASM) $(ASMKFLAGS) -o $@ $<
-
-kernel/kernel2.o: kernel/kernel2.asm include/kernel.inc
-	$(ASM) $(ASMKFLAGS) -o $@ $<
-
-kernel/kernel3.o: kernel/kernel3.asm include/kernel.inc
-	$(ASM) $(ASMKFLAGS) -o $@ $<
-
-kernel/kernel4.o: kernel/kernel4.asm include/kernel.inc
-	$(ASM) $(ASMKFLAGS) -o $@ $<
-
 kernel/entry.o : kernel/entry.S
 	$(CC) $(CFLAGS) -o $@ $<
 
-lib/krlliba1.o : lib/krlliba1.S
+lib/krlliba.o : lib/krlliba.S
 	$(CC) $(CFLAGS) -o $@ $<
-
-lib/krlliba.o : lib/krlliba.asm
-	$(ASM) $(ASMKFLAGS) -o $@ $<
 
 $(QXOSKERNEL) : $(OBJS) $(LINKSCRIPT)
 	$(LD) $(LDFLAGS) -o $(QXOSKERNEL) $(OBJS)

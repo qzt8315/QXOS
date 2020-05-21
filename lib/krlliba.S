@@ -56,22 +56,22 @@ display_str_colorful:
     movl    (dis_pos), %edi
     // 字符串位置
     movl    8(%ebp), %esi
-    cmp     $0, %esi
+    cmpl    $0, %esi
     jz      .show_color_str_end
     // 字体颜色
     movb    12(%ebp), %ah
 .loop_show_color_str:
-    cmp     $(PER_CHAR_LEN * LINE_CHARS * LINES), %edi
-    jl      .show_color_str_end
+    cmpl    $(PER_CHAR_LEN * LINE_CHARS * LINES), %edi
+    jae     .show_color_str_end
     lodsb
-    cmp     $0x0a, %al
+    cmpb    $0x0a, %al
     jz      .new_line
-    cmp     $0, %al
+    cmpb    $0, %al
     jz      .show_color_str_end
     addl    (pVGAMEM), %edi
     movw    %ax, (%edi)
     subl    (pVGAMEM), %edi
-    addl    PER_CHAR_LEN, %edi
+    addl    $PER_CHAR_LEN, %edi
     jmp     .show_next_char
 .new_line:
     pushl   %eax
