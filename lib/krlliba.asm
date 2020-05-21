@@ -9,8 +9,8 @@ extern	pVGAMEM
 
 [section .text]
 ; 引出各种函数
-global	out_byte
-global	in_byte
+; global	out_byte
+; global	in_byte
 global	display_str_colorful
 
 

@@ -26,7 +26,8 @@ OBJS			= kernel/entry.o \
 					kernel/start.o kernel/i8259.o \
 					kernel/global.o kernel/protect.o kernel/hwint.o \
 					kernel/proc.o kernel/vm.o kernel/main.o \
-					kernel/syscall.o lib/krllibc.o lib/krlliba.o
+					kernel/syscall.o lib/krllibc.o \
+					lib/krlliba1.o
 DASMOUTPUT		= kernel.bin.asm
 
 # All phony targets
@@ -80,6 +81,9 @@ kernel/kernel4.o: kernel/kernel4.asm include/kernel.inc
 	$(ASM) $(ASMKFLAGS) -o $@ $<
 
 kernel/entry.o : kernel/entry.S
+	$(CC) $(CFLAGS) -o $@ $<
+
+lib/krlliba1.o : lib/krlliba1.S
 	$(CC) $(CFLAGS) -o $@ $<
 
 lib/krlliba.o : lib/krlliba.asm
