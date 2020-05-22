@@ -4,6 +4,7 @@
 #include "protect.h"
 #include "proc.h"
 #include "global.h"
+#include "proto.h"
 
 // 初始化多进程
 PUBLIC  void    init_multiproc(){
@@ -42,10 +43,10 @@ PUBLIC  void    set_TSS_stack_ring2(u32 ss2, u32 esp2){
 PUBLIC  PROCESS*    init_proctable(PROCESS* p_proctab){
     // 初始化进程表
 	p_proctab->ldt_sel = SELECTOR_LDT_FIRST | SA_RPL_1;
-	Memcpy( p_proctab->ldts, &gdt[INDEX_CODE], sizeof(DESCRIPTOR));
+	Memcpy( ldt, &gdt[INDEX_CODE], sizeof(DESCRIPTOR));
 	p_proctab->ldts[0].attr1 = DA_C | DA_DPL1;
-	Memcpy(&(p_proctab->ldts[1]), &gdt[INDEX_DATA], sizeof(DESCRIPTOR));
+	Memcpy(&(ldt[1]), &gdt[INDEX_DATA], sizeof(DESCRIPTOR));
 	p_proctab->ldts[1].attr1 = DA_DRW | DA_DPL1;
 
-	init_desc(&gdt[INDEX_LDT1], p_proctab->ldts, LDT_SIZE * sizeof(DESCRIPTOR) - 1, DA_LDT, PRIVILEGY_TASK);
+	init_desc(&gdt[INDEX_LDT1], ldt, LDT_SIZE * sizeof(DESCRIPTOR) - 1, DA_LDT, PRIVILEGY_TASK);
 }
