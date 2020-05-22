@@ -15,6 +15,7 @@
 // gdt
 EXTERN	u8		    gdt_ptr[6];
 EXTERN	DESCRIPTOR	gdt[GDT_SIZE];
+EXTERN  DESCRIPTOR  ldt[LDT_SIZE];
 
 // idt
 EXTERN	u8		    idt_ptr[6];
@@ -28,7 +29,7 @@ EXTERN	PROCESS	    proc_table[NR_TASKS];
 EXTERN  PROCESS*    cur_proc;
 
 //
-EXTERN	TSS	proc_tss;
+EXTERN	TSS	        proc_tss;
 
 //irq中断向量
 EXTERN int_handler  irq_table[IRQ_NUM];
