@@ -14,6 +14,13 @@ PUBLIC	void	cstart(){
 	*iptr_limit = IDT_SIZE * sizeof(GATE) - 1;
 	*iptr_base  = (u32)idt;
 
+	// 加载idt
+	__asm__(
+		"lidt	(%0)":
+		:
+		"m"(idt_ptr):
+	);
+
 	// 初始化当前显示地方
 	dis_pos = 0;
 

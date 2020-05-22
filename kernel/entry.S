@@ -88,11 +88,10 @@ _start:
 te:
     call    kernelUnMap
     call    cstart
-    lidt    (idt_ptr)
 
     // 创建新进程
     call    init_proc
-    
+
     pushl   $proc_table
     call    context_switch
 
