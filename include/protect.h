@@ -28,23 +28,27 @@
 #define	EOI	0x20
 
 // 描述符索引
-#define	INDEX_DUMMY	0
-#define	INDEX_CODE	1
-#define	INDEX_DATA	2
-#define	INDEX_VIDEO	3
-#define	INDEX_TSS	4
-#define	INDEX_LDT1	5
+#define	INDEX_DUMMY			0
+#define	INDEX_CODE			1
+#define	INDEX_DATA			2
+#define	INDEX_VIDEO			3
+#define	INDEX_TSS			4
+#define	INDEX_LDT1			5
+#define	INDEX_USER_CODE		6
+#define	INDEX_USER_DATA		7
 
 // 描述符大小
 #define	DESC_SIZE	8
 
 // 选择子
-#define	Selector_Dummy	0x0
-#define	Selector_Code	0x8
-#define	Selector_Data	0x10
-#define	Selector_Video	0x18
-#define	Selector_Tss	0x20
-#define	Selector_Ldt1	0x28
+#define	Selector_Dummy			0x0
+#define	Selector_Code			0x8
+#define	Selector_Data			0x10
+#define	Selector_Video			0x18
+#define	Selector_Tss			0x20
+#define	Selector_Ldt1			0x28
+#define	Selector_USER_Code		(0x30 | SA_RPL_3)
+#define	Selector_USER_Data		(0x38 | SA_RPL_3)
 
 
 // 临时选择子

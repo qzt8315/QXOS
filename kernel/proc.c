@@ -15,6 +15,10 @@ PUBLIC  void    init_multiproc(){
     // 加载tss
     load_tss(INDEX_TSS * sizeof(DESCRIPTOR));
 
+    // 初始化usergdt
+    init_desc(&gdt[INDEX_USER_CODE], 0, 0xfffff, DA_C | DA_32 | DA_LIMIT_4K, DA_DPL3);
+    init_desc(&gdt[INDEX_USER_DATA], 0, 0xfffff, DA_DRW | DA_LIMIT_4K, DA_DPL3);
+
     // 初始化ldt
     Memcpy( ldt, &gdt[INDEX_CODE], sizeof(DESCRIPTOR));
 	ldt[0].attr1 = DA_C | DA_DPL1;
