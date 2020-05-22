@@ -92,9 +92,6 @@ te:
 
     // 创建新进程
     call    init_proc
-    pushl   $TSS_SELECTOR
-    call    load_tss
-    addl    $4, %esp
     movw    $0x28, %ax
     lldt    %ax
     pushl   $(proc_table+N_4K+76)

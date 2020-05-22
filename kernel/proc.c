@@ -12,7 +12,7 @@ PUBLIC  void    init_multiproc(){
 	TSS* p_tss	= &proc_tss;
     p_tss->io_base = sizeof(TSS);
     // 加载tss
-    // load_tss(INDEX_TSS);
+    load_tss(INDEX_TSS * sizeof(DESCRIPTOR));
     // 加载ldt
 }
 
