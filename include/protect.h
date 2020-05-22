@@ -47,8 +47,8 @@
 #define	Selector_Video			0x18
 #define	Selector_Tss			0x20
 #define	Selector_Ldt1			0x28
-#define	Selector_USER_Code		(0x30 | SA_RPL_3)
-#define	Selector_USER_Data		(0x38 | SA_RPL_3)
+#define	Selector_User_Code		(0x30 | SA_RPL_3)
+#define	Selector_User_Data		(0x38 | SA_RPL_3)
 
 
 // 临时选择子

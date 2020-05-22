@@ -92,11 +92,6 @@ te:
 
     // 创建新进程
     call    init_proc
-    movw    $0x28, %ax
-    lldt    %ax
-    pushl   $(proc_table+N_4K+76)
-    pushl   $0x10
-    call    set_TSS_stack_ring0
    
     movl    $(proc_table+N_4K), %esp
     pushl   $proc_table
