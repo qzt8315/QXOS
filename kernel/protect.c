@@ -51,7 +51,7 @@ void	init_8253();
 
 
 PUBLIC void exception_handler(u32 int_no, u32 error_code, u32 eip, u32 cs, u32 eflags){
-	u8 char_color = 0x74;
+	u8 char_color = black<<4 | red;
 	char * error_msg[] = {"#DE Divide Error",	// 0
 			"#DB RESERVED",						// 1
 			"--  NMI Interrupt",				// 2

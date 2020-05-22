@@ -294,7 +294,7 @@ USERSTACK_TEMP:	    .skip	N_4K
 USERSTACKTOP_TEMP:
 // 用于管理空余内存
 // 保存1个页帧,默认区域,不够后期拓展
-PAGE1DEFAULT:       .skip  N_4K
+PAGE1DEFAULT:       .skip   N_4K
 
 // 保存2个页帧,默认区域,不够后期拓展
 PAGE2DEFAULT:       .skip	N_4K
@@ -312,7 +312,7 @@ PAGE16DEFAULT:      .skip	N_4K
 PAGE32DEFAULT:      .skip	N_4K
 
 // 保存64个页帧,默认区域,不够后期拓展
-PAGE64DEFAULT:	    .skip  N_4K
+PAGE64DEFAULT:	    .skip   N_4K
 
 // 保存128个页帧,默认区域,不够后期拓展
 PAGE128DEFAULT:	    .skip	N_4K

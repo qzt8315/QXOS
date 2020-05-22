@@ -67,7 +67,7 @@ saveregs:
 
     jmp   *RETADDR_OFF(%ebp)
 
-// 切换上下文
+// 切换进程
 // void context_switch(PROCESS* nextProc);
 context_switch:
     movl    4(%esp), %eax
@@ -75,16 +75,10 @@ context_switch:
     addl    $N_4K, %eax
     movl    %eax, %esp
     call    restart
-    // pop     %gs
-    // pop     %fs
-    // pop     %es
-    // pop     %ds
-    // popal
-    // addl    $8, %esp
-    // iret
 
 
-// 切换进程
+// 恢复进程
+// void restart();
 restart:
     addl    $4, %esp
     pop     %gs
@@ -95,11 +89,14 @@ restart:
     addl    $8, %esp
     iret
 
-
+// 加载tss
+//  void    load_tss(u16 tss_sel);
 load_tss:
     ltr   4(%esp)
     ret
 
+// 加载ldt
+// void     load_ldt(u16 ldt_sel);
 load_ldt:
     lldt  4(%esp)
     ret

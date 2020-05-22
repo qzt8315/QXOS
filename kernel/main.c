@@ -46,7 +46,7 @@ void	TestA(){
 	int a;
 	while(1){
 		a = get_ticks();
-		display_str_colorful("A", 0x0f);
+		display_str_colorful("A", black<<4 | white);
 		delay_ms(10);
 	}
 }

@@ -71,7 +71,7 @@ PUBLIC	int	Memset(void* s,int ch, int n){
 	return 0;
 }
 
-
+// 系统调用：获取系统时间戳
 u32	get_ticks(){
 	int		nr_get_ticks = _NR_GET_TICKS;
 	int		n_syscall	 = INT_VECTOR_SYS_CALL;
@@ -92,6 +92,7 @@ u32	get_ticks(){
 
 
 extern	GMCHAR	_VCGAMEM;
+// 打印彩色字符串
 // void	disp_str_color(char* str, u8 color){
 void	display_str_colorful(char* str, u8 color){
 	if(str == NULL || dis_pos >= CGA_CHARS_LINE * CGA_LINES){
