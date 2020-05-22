@@ -19,7 +19,8 @@
 
 #define	NULL	0
 
-#define	NR_TASKS	1
+// 系统最大进程数
+#define	NR_TASKS	128
 
 #define IRQ_NUM     16
 

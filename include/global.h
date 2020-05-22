@@ -25,6 +25,7 @@ EXTERN	u32		dis_pos;
 
 //
 EXTERN	PROCESS	proc_table[NR_TASKS];
+EXTERN  PROCESS*    cur_proc;
 
 //
 EXTERN	TSS	proc_tss;
