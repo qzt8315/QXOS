@@ -5,7 +5,6 @@
 #include "proc.h"
 #include "global.h"
 #include "proto.h"
-void 			display_str_colorful(char *str, u8 color);
 void			TestA();
 
 extern	u32	USERSTACKTOP_TEMP;
