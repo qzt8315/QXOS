@@ -29,7 +29,6 @@ typedef	struct	s_proc{
 	u8			proc_stack[PROC_STACKSIZE];
 	STACK_FRAME	regs;
 	u16			ldt_sel;
-	DESCRIPTOR	ldts[LDT_SIZE];
 	u32			pid;
 	char		p_name[16];
 } PROCESS;
