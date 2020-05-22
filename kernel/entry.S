@@ -92,8 +92,7 @@ te:
 
     // 创建新进程
     call    init_proc
-   
-    movl    $(proc_table+N_4K), %esp
+    
     pushl   $proc_table
     call    context_switch
 
