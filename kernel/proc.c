@@ -14,7 +14,15 @@ PUBLIC  void    init_multiproc(){
     p_tss->io_base = sizeof(TSS);
     // 加载tss
     load_tss(INDEX_TSS * sizeof(DESCRIPTOR));
+
+    // 初始化ldt
+    Memcpy( ldt, &gdt[INDEX_CODE], sizeof(DESCRIPTOR));
+	ldt[0].attr1 = DA_C | DA_DPL1;
+	Memcpy(&(ldt[1]), &gdt[INDEX_DATA], sizeof(DESCRIPTOR));
+	ldt[1].attr1 = DA_DRW | DA_DPL1;
+	init_desc(&gdt[INDEX_LDT1], ldt, LDT_SIZE * sizeof(DESCRIPTOR) - 1, DA_LDT, PRIVILEGY_TASK);
     // 加载ldt
+    load_ldt(INDEX_LDT1 * sizeof(DESCRIPTOR));
 }
 
 // 设置ring0使用的堆栈
