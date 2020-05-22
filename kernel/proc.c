@@ -5,16 +5,15 @@
 #include "proc.h"
 #include "global.h"
 
-// 声明函数
-void	load_tss(u16 gdt_selector);
-
 // 初始化多进程
 PUBLIC  void    init_multiproc(){
     // 初始化TSS段
 	init_desc(&gdt[INDEX_TSS], &proc_tss, sizeof(TSS) - 1, DA_386TSS, PRIVILEGY_TASK);
 	TSS* p_tss	= &proc_tss;
     p_tss->io_base = sizeof(TSS);
-    //  load_tss(Selector_Tss);
+    // 加载tss
+    // load_tss(INDEX_TSS);
+    // 加载ldt
 }
 
 // 设置ring0使用的堆栈

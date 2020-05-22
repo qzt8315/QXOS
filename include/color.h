@@ -7,6 +7,8 @@
 // blue  := 2/3×(colorNumber & 1)/1 + 1/3×(colorNumber & 8)/8
 // if colorNumber = 6 then green := green / 2
 // 参考资料: https://en.wikipedia.org/wiki/Color_Graphics_Adapter
+// color1<<4 | color2
+// color1:背景色    color2:前景色
 #define black           0x0         // rgb(0    ,0      ,0)     黑色
 #define blue            0x1         // rgb(0    ,0      ,170)   蓝色
 #define green           0x2         // rgb(0    ,170    ,0)     绿色

@@ -18,6 +18,10 @@ void display_str_colorful(char *str, u8 color);
 
 // 内存拷贝
 PUBLIC	int	Memcpy(void* pDst, void* pSrc, int len);
-// 
+// 内存初始化
 PUBLIC	int	Memset(void* s,int ch, int n);
+// 加载tss
+void    load_tss(u16    tss_sel);
+// 加载ldt
+void     load_ldt(u16   ldt_sel);
 #endif

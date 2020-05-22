@@ -90,13 +90,13 @@ restart:
     iret
 
 // 加载tss
-//  void    load_tss(u16 tss_sel);
+//  void    load_tss(u16    tss_sel);
 load_tss:
     ltr   4(%esp)
     ret
 
 // 加载ldt
-// void     load_ldt(u16 ldt_sel);
+// void     load_ldt(u16    ldt_sel);
 load_ldt:
     lldt  4(%esp)
     ret
