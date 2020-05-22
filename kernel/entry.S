@@ -29,10 +29,10 @@
 #define  exception_with_errorcode(ex_code)   \
     call    saveregs;      \
     movl    %esp, %ebp;    \
-    pushl   68(%ebp);      \
     pushl   64(%ebp);      \
     pushl   60(%ebp);      \
     pushl   56(%ebp);      \
+    pushl   52(%ebp);      \
     pushl   $ex_code;      \
     jmp     exception;
 
@@ -50,7 +50,7 @@
     call    hwint_handler;  \
     call    enableIRQ;      \
     addl    $4, %esp;       \
-    ret;
+    call    restart;
 
 #define  irq_slave(irq_code)        \
     pushl   $0;             \
@@ -62,7 +62,7 @@
     call    hwint_handler;  \
     call    enableIRQ;      \
     addl    $4, %esp;       \
-    ret;
+    call    restart;
 
 .section .text
 .code32
@@ -102,7 +102,6 @@ te:
     call    set_TSS_stack_ring0
    
     movl    $(proc_table+N_4K), %esp
-    // jmp   restart
     pushl   $proc_table
     call    context_switch
 
@@ -179,7 +178,7 @@ copr_error:				        // 10
 exception:
 	call	exception_handler
 	add	    $8, %esp
-	iret
+	call    restart
 
 
 
@@ -252,7 +251,7 @@ sys_call_entry:
     add     $4, %esp
     movl    %eax, (proc_table + N_4K + 4*11)
     sti
-    ret
+    call    restart
 
 
 

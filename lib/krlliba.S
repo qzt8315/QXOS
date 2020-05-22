@@ -5,6 +5,7 @@
 .extern     dis_pos
 .extern     pVGAMEM
 .extern     proc_table
+.extern     cur_proc
 
 
 .extern     set_TSS_stack_ring0
@@ -64,38 +65,34 @@ saveregs:
     movw  %bx, %es
     movl  %esp, %ebp
 
-    pushl $restart
     jmp   *RETADDR_OFF(%ebp)
 
 // 切换上下文
 // void context_switch(PROCESS* nextProc);
 context_switch:
     movl    4(%esp), %eax
+    movl    %eax, (cur_proc)
     addl    $N_4K, %eax
     movl    %eax, %esp
+    call    restart
+    // pop     %gs
+    // pop     %fs
+    // pop     %es
+    // pop     %ds
+    // popal
+    // addl    $8, %esp
+    // iret
+
+
+// 切换进程
+restart:
+    addl    $4, %esp
     pop     %gs
     pop     %fs
     pop     %es
     pop     %ds
     popal
     addl    $8, %esp
-    iret
-
-
-// 切换进程
-restart:
-    pushl    $(proc_table+N_4K+76)
-    pushl    $0x10
-    call     set_TSS_stack_ring0
-    addl     $8, %esp
-    movw     $0x28, %ax
-    lldt     %ax
-    pop      %gs
-    pop      %fs
-    pop      %es
-    pop      %ds
-    popal
-    addl     $8, %esp
     iret
 
 
