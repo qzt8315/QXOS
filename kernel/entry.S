@@ -7,7 +7,7 @@
 
 .extern     sys_call_handler
 .extern     proc_table
-.extern	   init_vm
+.extern	    init_vm
 .extern     kernelUnMap
 .extern     cstart
 .extern     init_proc
@@ -27,41 +27,41 @@
 #define  TSS_SELECTOR   0x20
 #define  V2P_(vaddr)   (vaddr+K_P_BASE_ADDR-K_V_BASE_ADDR)
 #define  exception_with_errorcode(ex_code)   \
-    call     saveregs;      \
-    movl     %esp, %ebp;    \
-    pushl    68(%ebp);      \
-    pushl    64(%ebp);      \
-    pushl    60(%ebp);      \
-    pushl    56(%ebp);      \
-    pushl    $ex_code;      \
-    jmp      exception;
+    call    saveregs;      \
+    movl    %esp, %ebp;    \
+    pushl   68(%ebp);      \
+    pushl   64(%ebp);      \
+    pushl   60(%ebp);      \
+    pushl   56(%ebp);      \
+    pushl   $ex_code;      \
+    jmp     exception;
 
 #define  exception_no_errorcode(ex_code)     \
-    pushl    $0xffffffff;               \
+    pushl   $0xffffffff;               \
     exception_with_errorcode(ex_code);
 
 #define  irq_master(irq_code)       \
-    pushl    $0;             \
-    call     saveregs;       \
-    pushl    $irq_code;      \
-    call     disableIRQ;     \
-    call     sendEOI2Master; \
-    sti;                     \
-    call     hwint_handler;  \
-    call     enableIRQ;      \
-    addl     $4, %esp;       \
+    pushl   $0;             \
+    call    saveregs;       \
+    pushl   $irq_code;      \
+    call    disableIRQ;     \
+    call    sendEOI2Master; \
+    sti;                    \
+    call    hwint_handler;  \
+    call    enableIRQ;      \
+    addl    $4, %esp;       \
     ret;
 
 #define  irq_slave(irq_code)        \
-    pushl    $0;             \
-    call     saveregs;       \
-    pushl    $irq_code;      \
-    call     disableIRQ;     \
-    call     sendEOI2Slave;  \
+    pushl   $0;             \
+    call    saveregs;       \
+    pushl   $irq_code;      \
+    call    disableIRQ;     \
+    call    sendEOI2Slave;  \
     sti;                     \
-    call     hwint_handler;  \
-    call     enableIRQ;      \
-    addl     $4, %esp;       \
+    call    hwint_handler;  \
+    call    enableIRQ;      \
+    addl    $4, %esp;       \
     ret;
 
 .section .text
@@ -75,33 +75,33 @@
 // 内核入口
 // --------------------------
 _start:
-    movl  $V2P_(STACKTOP), %esp
-    sgdt  V2P_(gdt_ptr)
-    call  init_vm
-    movl  V2P_(pPDETable), %eax
-    orl   $8, %eax
-    movl  %eax, %cr3
-    lgdt  (gdt_ptr)
+    movl    $V2P_(STACKTOP), %esp
+    sgdt    V2P_(gdt_ptr)
+    call    init_vm
+    movl    V2P_(pPDETable), %eax
+    orl     $8, %eax
+    movl    %eax, %cr3
+    lgdt    (gdt_ptr)
     // 切换堆栈
-    movl  $STACKTOP, %esp
-    ljmp  $8,$te
-    te:
-    call  kernelUnMap
-    call  cstart
-    lidt  (idt_ptr)
+    movl    $STACKTOP, %esp
+    ljmp    $8,$te
+te:
+    call    kernelUnMap
+    call    cstart
+    lidt    (idt_ptr)
 
     // 创建新进程
-    call  init_proc
-    pushl $TSS_SELECTOR
-    call  load_tss
-    addl  $4, %esp
-    movw  $0x28, %ax
-    lldt  %ax
-    pushl    $(proc_table+N_4K+76)
-    pushl    $0x10
-    call     set_TSS_stack_ring0
+    call    init_proc
+    pushl   $TSS_SELECTOR
+    call    load_tss
+    addl    $4, %esp
+    movw    $0x28, %ax
+    lldt    %ax
+    pushl   $(proc_table+N_4K+76)
+    pushl   $0x10
+    call    set_TSS_stack_ring0
    
-    movl  $(proc_table+N_4K), %esp
+    movl    $(proc_table+N_4K), %esp
     // jmp   restart
     pushl   $proc_table
     call    context_switch
@@ -131,54 +131,54 @@ _start:
 divide_error:
     exception_no_errorcode(0)
 
-debug_exception:			   // 1
+debug_exception:			    // 1
 	exception_no_errorcode(1)
 
-not_mask_interrupt:			// 2
+not_mask_interrupt:			    // 2
 	exception_no_errorcode(2)
 
-bug_point:				      // 3
+bug_point:				        // 3
 	exception_no_errorcode(3)
 
-overflow:				      // 4
+overflow:				        // 4
 	exception_no_errorcode(4)
 
-bounds:					      // 5
+bounds:					        // 5
 	exception_no_errorcode(5)
 
-invalid_opcode:				// 6
+invalid_opcode:				    // 6
 	exception_no_errorcode(6)
 
-copr_not_available:			// 7
+copr_not_available:			    // 7
 	exception_no_errorcode(7)
 
-double_fault:				   // 8
+double_fault:				    // 8
 	exception_with_errorcode(8)
 
-copr_seg_overrun:			   // 9
+copr_seg_overrun:			    // 9
 	exception_no_errorcode(9)
 
-invalid_tss:				   // a
+invalid_tss:	 			    // a
 	exception_with_errorcode(0xa)
 
-segment_not_present:		   // b
+segment_not_present:		    // b
 	exception_with_errorcode(0xb)
 
-stack_excption:				// c
+stack_excption:				    // c
 	exception_with_errorcode(0xc)
 
-general_protection:			// d
+general_protection:			    // d
 	exception_with_errorcode(0xd)
 
-page_fault:					   // e
+page_fault:					    // e
 	exception_with_errorcode(0xe)
 
-copr_error:					   // 10
+copr_error:				        // 10
 	exception_no_errorcode(0x10)
 
 exception:
 	call	exception_handler
-	add	$8, %esp
+	add	    $8, %esp
 	iret
 
 
@@ -286,43 +286,43 @@ sys_call_entry:
 .global	PAGE1024DEFAULT
 
 
-STACKSPACE:	.skip	STACK_SIZE
+STACKSPACE:	        .skip	STACK_SIZE
 STACKTOP:
-ARDS_SPACE:	.skip	ARDS_SIZE*ARDS_COUNT
-PAGESPACE:	.skip	(VKRLADDRSIZE+VKRLADDRSIZE)/N_4K*PAGEITEMSIZE
+ARDS_SPACE:	        .skip	ARDS_SIZE*ARDS_COUNT
+PAGESPACE:	        .skip	(VKRLADDRSIZE+VKRLADDRSIZE)/N_4K*PAGEITEMSIZE
 _EPAGESPACE:
-USERSTACK_TEMP:	   .skip	N_4K
+USERSTACK_TEMP:	    .skip	N_4K
 USERSTACKTOP_TEMP:
 // 用于管理空余内存
 // 保存1个页帧,默认区域,不够后期拓展
-PAGE1DEFAULT:        .skip  N_4K
+PAGE1DEFAULT:       .skip  N_4K
 
 // 保存2个页帧,默认区域,不够后期拓展
-PAGE2DEFAULT:        .skip	N_4K
+PAGE2DEFAULT:       .skip	N_4K
 
 // 保存4个页帧,默认区域,不够后期拓展
-PAGE4DEFAULT:		   .skip	N_4K
+PAGE4DEFAULT:	    .skip	N_4K
 
 // 保存8个页帧,默认区域,不够后期拓展
-PAGE8DEFAULT:		   .skip	N_4K
+PAGE8DEFAULT:       .skip	N_4K
 
 // 保存16个页帧,默认区域,不够后期拓展
-PAGE16DEFAULT:		   .skip	N_4K
+PAGE16DEFAULT:      .skip	N_4K
 
 // 保存32个页帧,默认区域,不够后期拓展
-PAGE32DEFAULT:		   .skip	N_4K
+PAGE32DEFAULT:      .skip	N_4K
 
 // 保存64个页帧,默认区域,不够后期拓展
-PAGE64DEFAULT:		   .skip  N_4K
+PAGE64DEFAULT:	    .skip  N_4K
 
 // 保存128个页帧,默认区域,不够后期拓展
-PAGE128DEFAULT:		.skip	N_4K
+PAGE128DEFAULT:	    .skip	N_4K
 
 // 保存256个页帧,默认区域,不够后期拓展
-PAGE256DEFAULT:		.skip	N_4K
+PAGE256DEFAULT:	    .skip	N_4K
 
 // 保存512个页帧,默认区域,不够后期拓展
-PAGE512DEFAULT:		.skip	N_4K
+PAGE512DEFAULT:	    .skip	N_4K
 
 // 保存1024个页帧,默认区域,不够后期拓展
-PAGE1024DEFAULT:	   .skip	N_4K
+PAGE1024DEFAULT:    .skip	N_4K
