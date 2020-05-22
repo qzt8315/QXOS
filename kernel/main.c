@@ -25,12 +25,12 @@ PUBLIC	void	init_proc(){
 	// 初始化进程表
 	PROCESS* process = proc_table;
 	process->ldt_sel = SELECTOR_LDT_FIRST | SA_RPL_1;
-	Memcpy( process->ldts, &gdt[INDEX_CODE], sizeof(DESCRIPTOR));
-	process->ldts[0].attr1 = DA_C | DA_DPL1;
-	Memcpy(&(process->ldts[1]), &gdt[INDEX_DATA], sizeof(DESCRIPTOR));
-	process->ldts[1].attr1 = DA_DRW | DA_DPL1;
+	Memcpy( ldt, &gdt[INDEX_CODE], sizeof(DESCRIPTOR));
+	ldt[0].attr1 = DA_C | DA_DPL1;
+	Memcpy(&(ldt[1]), &gdt[INDEX_DATA], sizeof(DESCRIPTOR));
+	ldt[1].attr1 = DA_DRW | DA_DPL1;
 
-	init_desc(&gdt[INDEX_LDT1], process->ldts, LDT_SIZE * sizeof(DESCRIPTOR) - 1, DA_LDT, PRIVILEGY_TASK);
+	init_desc(&gdt[INDEX_LDT1], ldt, LDT_SIZE * sizeof(DESCRIPTOR) - 1, DA_LDT, PRIVILEGY_TASK);
 
 	process->regs.cs = Selector_Ldt_Code | SA_RPL_1 | SA_TIL;
 	process->regs.ds = Selector_Ldt_Data | SA_RPL_1 | SA_TIL;

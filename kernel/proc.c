@@ -44,9 +44,9 @@ PUBLIC  PROCESS*    init_proctable(PROCESS* p_proctab){
     // 初始化进程表
 	p_proctab->ldt_sel = SELECTOR_LDT_FIRST | SA_RPL_1;
 	Memcpy( ldt, &gdt[INDEX_CODE], sizeof(DESCRIPTOR));
-	p_proctab->ldts[0].attr1 = DA_C | DA_DPL1;
+	ldt[0].attr1 = DA_C | DA_DPL1;
 	Memcpy(&(ldt[1]), &gdt[INDEX_DATA], sizeof(DESCRIPTOR));
-	p_proctab->ldts[1].attr1 = DA_DRW | DA_DPL1;
+	ldt[1].attr1 = DA_DRW | DA_DPL1;
 
 	init_desc(&gdt[INDEX_LDT1], ldt, LDT_SIZE * sizeof(DESCRIPTOR) - 1, DA_LDT, PRIVILEGY_TASK);
 }
