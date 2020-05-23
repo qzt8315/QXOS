@@ -26,13 +26,13 @@ typedef	struct	s_stack_frame{
 
 typedef	struct	s_proc{
 	// 进程内核栈， 4K
-	u8			proc_stack[PROC_STACKSIZE];
+	u8			krlStack[PROC_STACKSIZE];
 	STACK_FRAME	regs;
 	u16			ldt_sel;
 	u32			pid;
 	// 实际就是cr3寄存器的值
-	u32			proc_pde;
-	u8			procStatus;
+	u32			pde;
+	u8			status;
 	//	进程状态:停止、运行、睡眠、僵尸
 	#define		s_stopped		0;
 	#define		s_running		1;
