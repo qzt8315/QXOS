@@ -74,6 +74,11 @@ context_switch:
     movl    %eax, (cur_proc)
     addl    $N_4K, %eax
     movl    %eax, %esp
+    addl    $76, %eax
+    pushl   %eax
+    pushl   $0x10
+    call    set_TSS_stack_ring0
+    addl    $8, %esp
     call    restart
 
 
