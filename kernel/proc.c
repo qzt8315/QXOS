@@ -55,14 +55,14 @@ PUBLIC  void    set_TSS_stack_ring2(u32 ss2, u32 esp2){
 // p_proctab: 初始化的进程表
 // pEnter: 进程入口值
 // pStack: 进程堆栈
-PUBLIC  PROCESS*    init_proctable(PROCESS* p_proctab, void* pEnter, void* pStack){
+PUBLIC  PROCESS*    init_proctable(PROCESS* p_proctab, void* pEnter, void* pStackTop){
     // 填充ldt选择子，进程中不会使用
 	p_proctab->ldt_sel      = SELECTOR_LDT_FIRST | SA_RPL_3;
     // 初始化寄存器
     p_proctab->regs.cs      = Selector_User_Code;
     p_proctab->regs.eip     = (u32)pEnter;
     p_proctab->regs.ss      = Selector_User_Data;
-    p_proctab->regs.esp     = (u32)pStack;
+    p_proctab->regs.esp     = (u32)pStackTop;
     p_proctab->regs.ds      = Selector_User_Data;
     p_proctab->regs.es      = Selector_User_Data;
     p_proctab->regs.fs      = Selector_User_Data;
@@ -70,5 +70,5 @@ PUBLIC  PROCESS*    init_proctable(PROCESS* p_proctab, void* pEnter, void* pStac
     // IOPL = 1;IF=1(响应可屏蔽中断);
     p_proctab->regs.eflags  = 0x1202;
     // 设置进程状态
-    p_proctab->status   = s_running;
+    p_proctab->status       = s_running;
 }
