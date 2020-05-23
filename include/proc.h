@@ -30,6 +30,12 @@ typedef	struct	s_proc{
 	STACK_FRAME	regs;
 	u16			ldt_sel;
 	u32			pid;
+	u8			procStatus;
+	//	进程状态:停止、运行、睡眠、僵尸
+	#define		s_stopped		0;
+	#define		s_running		1;
+	#define		s_sleeping		2;
+	#define		s_zombie		3;
 	char		p_name[16];
 } PROCESS;
 
