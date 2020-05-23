@@ -10,7 +10,7 @@
 
 // 32位无符号整形转字符串(16进制)
 PUBLIC	int	uint2str(u32 num, char *str){
-	int cnt=0, i;
+	int i;
 	char hex[]="0123456789ABCDEF";
 	if(str == NULL)
 		return -1;
@@ -18,19 +18,12 @@ PUBLIC	int	uint2str(u32 num, char *str){
 	str++;
 	*str = 'x';
 	str++;
-	if(num == 0){
-		*str='0';
-		cnt++;
-	}
 	for(i=28; i>=0; i-=4){
 		int index = (num >> i) & 0xf;
 		*str=hex[index];
 		str++;
-		cnt++;
 	}
-	for(;cnt<8; cnt++, str++){
-		*str=0;
-	}
+	*str=0;
 	return 0;
 }
 
