@@ -91,7 +91,7 @@ te:
 
     // 创建新进程
     call    init_proc
-
+    ud2
     pushl   $proc_table
     call    context_switch
 
@@ -167,7 +167,7 @@ copr_error:				        // 10
 
 exception:
 	call	exception_handler
-	add	    $8, %esp
+	add	    $20, %esp
 	call    restart
 
 
