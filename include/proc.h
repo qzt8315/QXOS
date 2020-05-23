@@ -30,6 +30,8 @@ typedef	struct	s_proc{
 	STACK_FRAME	regs;
 	u16			ldt_sel;
 	u32			pid;
+	// 实际就是cr3寄存器的值
+	u32			proc_pde;
 	u8			procStatus;
 	//	进程状态:停止、运行、睡眠、僵尸
 	#define		s_stopped		0;
