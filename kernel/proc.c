@@ -56,6 +56,9 @@ PUBLIC  void    set_TSS_stack_ring2(u32 ss2, u32 esp2){
 // pEnter: 进程入口值
 // pStack: 进程堆栈
 PUBLIC  PROCESS*    init_proctable(PROCESS* p_proctab, void* pEnter, void* pStackTop){
+    if(p_proctab == NULL)
+        return NULL;
+    Memset(p_proctab, 0, sizeof(PROCESS));
     // 填充ldt选择子，进程中不会使用
 	p_proctab->ldt_sel      = SELECTOR_LDT_FIRST | SA_RPL_2;
     // 初始化寄存器

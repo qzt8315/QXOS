@@ -94,12 +94,20 @@ Ks:
     call    cstart
 
     // 创建新进程
-    pushl   $USERSTACK2TOP_TEMP
-    pushl   $TestB
+    // 初始化进程1
+    pushl   $USERSTACK1TOP_TEMP
+    pushl   $TestA
     pushl   $proc_table
     call    init_proctable
     addl    $12, %esp
-    pushl   $proc_table
+    // 初始化进程2
+    pushl   $USERSTACK2TOP_TEMP
+    pushl   $TestB
+    pushl   $(proc_table+0x1067)
+    call    init_proctable
+    addl    $12, %esp
+
+    pushl   $(proc_table+0x1067)
     call    context_switch
 
 
@@ -246,7 +254,7 @@ sys_call_entry:
     pushl   %eax
     call    sys_call_handler
     add     $4, %esp
-    movl    %eax, (proc_table + N_4K + 4*11)
+    movl    %eax, 44(%esp)
     sti
     call    restart
 
