@@ -47,8 +47,8 @@
 #define	Selector_Video			0x18
 #define	Selector_Tss			0x20
 #define	Selector_Ldt1			0x28
-#define	Selector_User_Code		(0x30 | SA_RPL_3)
-#define	Selector_User_Data		(0x38 | SA_RPL_3)
+#define	Selector_User_Code		(0x30 | SA_RPL_2)
+#define	Selector_User_Data		(0x38 | SA_RPL_2)
 
 
 // 临时选择子
@@ -76,6 +76,7 @@
 #define	PRIVILEGY_USER	3
 
 #define	DA_C		0x98
+#define	DA_CR		0x9a
 #define	DA_DRW		0x92
 
 // 门类型

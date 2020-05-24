@@ -23,12 +23,13 @@ PUBLIC	void	init_proc(){
 	
 	// 初始化进程表
 	PROCESS* process = proc_table;
-	process->ldt_sel = SELECTOR_LDT_FIRST | SA_RPL_1;
-	process->regs.cs = Selector_Ldt_Code | SA_RPL_1 | SA_TIL;
-	process->regs.ds = Selector_Ldt_Data | SA_RPL_1 | SA_TIL;
-	process->regs.ss = Selector_Ldt_Data | SA_RPL_1 | SA_TIL;
-	process->regs.es = Selector_Ldt_Data | SA_RPL_1 | SA_TIL;
-	process->regs.gs = Selector_Video | SA_RPL_1;
+	process->ldt_sel = SELECTOR_LDT_FIRST | SA_RPL_2;
+	process->regs.cs = Selector_User_Code;
+	process->regs.ds = Selector_User_Data;
+	process->regs.ss = Selector_User_Data;
+	process->regs.es = Selector_User_Data;
+	process->regs.fs = Selector_User_Data;
+	process->regs.gs = Selector_User_Data;
 	process->regs.eip = (u32)TestA;
 	process->regs.esp = (u32)&USERSTACKTOP_TEMP;
 	process->regs.eflags = 0x1202;
