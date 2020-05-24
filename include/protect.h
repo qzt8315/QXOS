@@ -87,9 +87,9 @@
 #define	DA_LIMIT_4K	0x8000
 
 #define	DA_DPL0		0x0
-#define	DA_DPL1		0x20
-#define	DA_DPL2		0x40
-#define	DA_DPL3		0x60
+#define	DA_DPL1		0x1
+#define	DA_DPL2		0x2
+#define	DA_DPL3		0x3
 
 // 描述符结构
 typedef struct s_descriptor {
