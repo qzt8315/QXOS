@@ -21,7 +21,9 @@
 .extern     load_tss
 .extern     load_ldt
 .extern     set_TSS_stack_ring0
+.extern     init_proctable
 .extern     context_switch
+.extern     TestA
 
 // 汇编中使用到的宏
 #define  Selector_Code  0x8
@@ -92,7 +94,12 @@ Ks:
     call    cstart
 
     // 创建新进程
-    call    init_proc
+    // call    init_proc
+    pushl   $USERSTACKTOP_TEMP
+    pushl   $TestA
+    pushl   $proc_table
+    call    init_proctable
+    addl    $12, %esp
     pushl   $proc_table
     call    context_switch
 
