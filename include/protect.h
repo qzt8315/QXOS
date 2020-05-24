@@ -97,7 +97,8 @@ typedef struct s_descriptor {
 	u16	base_low16;
 	u8	base_mid8;
 	u8	attr1;
-	u8	attr2_limit_high4;
+	u8	limit_high4:4;
+	u8	attr2:4;
 	u8	base_high8;
 } DESCRIPTOR;
 

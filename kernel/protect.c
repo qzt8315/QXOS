@@ -220,7 +220,8 @@ PUBLIC	int init_desc(DESCRIPTOR* p_desc, void* base, u32 limit, u16 attr, u8 dpl
 	p_desc->base_low16	 = (u16)(ubase & 0xffff);
 	p_desc->base_mid8	 = (u8)((ubase>>16) & 0xff);
 	p_desc->attr1	 	 = (u8)((attr & 0x9f) | ((dpl & 0x3)<<5) );
-	p_desc->attr2_limit_high4	 = (u8)( ((attr>>8) & 0xf0) | ((limit>>16)&0x0f)  );
+	p_desc->limit_high4	 = (u8)((limit>>16)&0x0f);
+	p_desc->attr2		 = (u8)((attr>>12) & 0x0f);
 	p_desc->base_high8	 = (u8)( (ubase>>24) & 0xff );
 	return	0;
 }
