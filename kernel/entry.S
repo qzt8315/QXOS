@@ -10,7 +10,6 @@
 .extern	    init_vm
 .extern     kernelUnMap
 .extern     cstart
-.extern     init_proc
 .extern     enableIRQ
 .extern     disableIRQ
 .extern     sendEOI2Master
@@ -94,7 +93,6 @@ Ks:
     call    cstart
 
     // 创建新进程
-    // call    init_proc
     pushl   $USERSTACKTOP_TEMP
     pushl   $TestA
     pushl   $proc_table
