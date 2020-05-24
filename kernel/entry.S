@@ -23,6 +23,7 @@
 .extern     init_proctable
 .extern     context_switch
 .extern     TestA
+.extern     TestB
 
 // 汇编中使用到的宏
 #define  Selector_Code  0x8
@@ -93,8 +94,8 @@ Ks:
     call    cstart
 
     // 创建新进程
-    pushl   $USERSTACK1TOP_TEMP
-    pushl   $TestA
+    pushl   $USERSTACK2TOP_TEMP
+    pushl   $TestB
     pushl   $proc_table
     call    init_proctable
     addl    $12, %esp
