@@ -24,6 +24,7 @@
 .extern     context_switch
 
 // 汇编中使用到的宏
+#define  Selector_Code  0x8
 #define  TSS_SELECTOR   0x20
 #define  V2P_(vaddr)   (vaddr+K_P_BASE_ADDR-K_V_BASE_ADDR)
 #define  exception_with_errorcode(ex_code)   \
@@ -84,8 +85,9 @@ _start:
     lgdt    (gdt_ptr)
     // 切换堆栈
     movl    $STACKTOP, %esp
-    ljmp    $8,$te
-te:
+    ljmp    $Selector_Code,$Ks
+//  转跳到内核空间
+Ks:
     call    kernelUnMap
     call    cstart
 
