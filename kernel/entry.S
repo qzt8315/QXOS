@@ -93,7 +93,7 @@ Ks:
     call    cstart
 
     // 创建新进程
-    pushl   $USERSTACKTOP_TEMP
+    pushl   $USERSTACK1TOP_TEMP
     pushl   $TestA
     pushl   $proc_table
     call    init_proctable
@@ -266,7 +266,8 @@ sys_call_entry:
 .global	ARDS_SPACE
 .global	PAGESPACE
 .global	_EPAGESPACE
-.global	USERSTACKTOP_TEMP
+.global	USERSTACK1TOP_TEMP
+.global	USERSTACK2TOP_TEMP
 
 .global	PAGE1DEFAULT
 .global	PAGE2DEFAULT
@@ -286,8 +287,10 @@ STACKTOP:
 ARDS_SPACE:	        .skip	ARDS_SIZE*ARDS_COUNT
 PAGESPACE:	        .skip	(VKRLADDRSIZE+VKRLADDRSIZE)/N_4K*PAGEITEMSIZE
 _EPAGESPACE:
-USERSTACK_TEMP:	    .skip	N_4K
-USERSTACKTOP_TEMP:
+USERSTACK1_TEMP:	    .skip	N_4K
+USERSTACK1TOP_TEMP:
+USERSTACK2_TEMP:	    .skip	N_4K
+USERSTACK2TOP_TEMP:
 // 用于管理空余内存
 // 保存1个页帧,默认区域,不够后期拓展
 PAGE1DEFAULT:       .skip   N_4K
