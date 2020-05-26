@@ -32,6 +32,9 @@ PUBLIC	void	cstart(){
 	// 初始化时钟
 	ticks = 0;
 
+	// 初始化中断重入变量
+	nRenter	= 0;
+
 	// char *strng = "123\n456\n789";
 	// display_str_colorful(strng, 0x74);
 

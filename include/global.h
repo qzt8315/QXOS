@@ -59,3 +59,6 @@ EXTERN  BUDDYBLOCK* pBuddyBlocks[11];
 
 // 指向显存地址
 EXTERN GMCHAR       (*pVGAMEM)[CGA_CHARS_LINE];
+
+// 控制中断重入
+EXTERN  int         nRenter;
