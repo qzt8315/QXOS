@@ -6,6 +6,7 @@
 .extern     pVGAMEM
 .extern     proc_table
 .extern     cur_proc
+.extern     nRenter
 
 
 .extern     set_TSS_stack_ring0
@@ -93,6 +94,7 @@ restart:
     pop     %ds
     popal
     addl    $8, %esp
+    decl    (nRenter)
     sti
     iret
 
