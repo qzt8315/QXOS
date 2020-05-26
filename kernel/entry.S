@@ -44,6 +44,7 @@
     exception_with_errorcode(ex_code);
 
 #define  irq_master(irq_code)       \
+    cli;                    \
     pushl   $0;             \
     call    saveregs;       \
     pushl   $irq_code;      \
@@ -56,6 +57,7 @@
     call    restart;
 
 #define  irq_slave(irq_code)        \
+    cli;                    \
     pushl   $0;             \
     call    saveregs;       \
     pushl   $irq_code;      \
