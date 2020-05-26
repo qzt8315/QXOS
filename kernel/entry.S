@@ -30,17 +30,20 @@
 #define  TSS_SELECTOR   0x20
 #define  V2P_(vaddr)   (vaddr+K_P_BASE_ADDR-K_V_BASE_ADDR)
 #define  exception_with_errorcode(ex_code)   \
-    call    saveregs;      \
-    movl    %esp, %ebp;    \
-    pushl   64(%ebp);      \
-    pushl   60(%ebp);      \
-    pushl   56(%ebp);      \
-    pushl   52(%ebp);      \
-    pushl   $ex_code;      \
+    cli;                    \
+    call    saveregs;       \
+    sti;                    \
+    movl    %esp, %ebp;     \
+    pushl   64(%ebp);       \
+    pushl   60(%ebp);       \
+    pushl   56(%ebp);       \
+    pushl   52(%ebp);       \
+    pushl   $ex_code;       \
     jmp     exception;
 
 #define  exception_no_errorcode(ex_code)     \
-    pushl   $0xffffffff;               \
+    cli;                    \
+    pushl   $0xffffffff;    \
     exception_with_errorcode(ex_code);
 
 #define  irq_master(irq_code)       \
@@ -63,7 +66,7 @@
     pushl   $irq_code;      \
     call    disableIRQ;     \
     call    sendEOI2Slave;  \
-    sti;                     \
+    sti;                    \
     call    hwint_handler;  \
     call    enableIRQ;      \
     addl    $4, %esp;       \
@@ -108,7 +111,7 @@ Ks:
     pushl   $(proc_table+0x106c)
     call    init_proctable
     addl    $12, %esp
-
+    
     pushl   $(proc_table+0x106c)
     call    context_switch
 

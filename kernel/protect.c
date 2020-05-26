@@ -208,6 +208,8 @@ PUBLIC	void init_prot(){
 	// 开启系统调用
 	init_idt_desc(0x80,		DA_386IGate,
 			sys_call_entry,	PRIVILEGY_USER);
+
+			
 }
 
 
