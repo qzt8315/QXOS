@@ -12,16 +12,14 @@
 PRIVATE void hwint_handler_clock();
 
 // 硬件中断处理
+// 中断处理需要快速完成
 PUBLIC void hwint_handler(u32 hwint_no){
-	// 红字黑底
-	u8 char_color = black<<4 | red;
-
-	char hwint_str[11];
 	switch (hwint_no)
 	{
 	// 时间中断处理
 	case _NR_GET_TICKS:
 		hwint_handler_clock();
+		return;
 		break;
 	
 	default:
@@ -31,7 +29,8 @@ PUBLIC void hwint_handler(u32 hwint_no){
 
 // 时钟中断处理
 void hwint_handler_clock(){
-	display_str_colorful("*", black<<4 | light_gray);
+	// 减少中断处理时间
+	// display_str_colorful("*", black<<4 | light_gray);
     ticks++;
 }
 
