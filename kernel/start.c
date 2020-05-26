@@ -18,8 +18,10 @@ PUBLIC	void	cstart(){
 	init_prot();
 
 	// 加载idt
+	// 并且打开中断
 	__asm__(
-		"lidt	(%0)":
+		"lidt	(%0);"
+		"sti;":
 		:
 		"m"(idt_ptr):
 	);

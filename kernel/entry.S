@@ -111,7 +111,7 @@ Ks:
     pushl   $(proc_table+0x106c)
     call    init_proctable
     addl    $12, %esp
-    
+
     pushl   $(proc_table+0x106c)
     call    context_switch
 
@@ -254,13 +254,14 @@ hwint15:
 // ------------------------
 sys_call_entry:
     // 填充对系统调用中无用的errorcode
+    cli
     pushl   $0
     call    saveregs
+    sti
     pushl   %eax
     call    sys_call_handler
     add     $4, %esp
     movl    %eax, 44(%esp)
-    sti
     call    restart
 
 
