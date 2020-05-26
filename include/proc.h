@@ -28,17 +28,17 @@ typedef	struct	s_proc{
 	// 进程内核栈， 4K
 	u8			krlStack[PROC_STACKSIZE];
 	STACK_FRAME	regs;
-	u16			ldt_sel;
+	u32			ldt_sel;
 	u32			pid;
 	// 实际就是cr3寄存器的值
 	u32			pde;
 	u8			status;
 	//	进程状态:停止、运行、睡眠、僵尸
-	#define		s_stopped		0;
-	#define		s_running		1;
-	#define		s_sleeping		2;
-	#define		s_zombie		3;
-	char		p_name[16];
+	#define		s_stopped		0
+	#define		s_running		1
+	#define		s_sleeping		2
+	#define		s_zombie		3
+	char		p_name[19];
 } PROCESS;
 
 PUBLIC  void    init_multiproc();

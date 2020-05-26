@@ -103,11 +103,11 @@ Ks:
     // 初始化进程2
     pushl   $USERSTACK2TOP_TEMP
     pushl   $TestB
-    pushl   $(proc_table+0x1067)
+    pushl   $(proc_table+0x106c)
     call    init_proctable
     addl    $12, %esp
 
-    pushl   $(proc_table+0x1067)
+    pushl   $(proc_table+0x106c)
     call    context_switch
 
 
