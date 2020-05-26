@@ -21,7 +21,7 @@ void	TestB(){
 	int a;
 	while(1){
 		a = get_ticks();
-		display_str_colorful("B", white<<4 | black);
+		display_str_colorful("B", black<<4 | brown);
 		delay_ms(30);
 	}
 }
