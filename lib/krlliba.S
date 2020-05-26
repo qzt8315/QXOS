@@ -67,7 +67,7 @@ saveregs:
 
     jmp   *RETADDR_OFF(%ebp)
 
-// 切换进程
+// 切换进程,不会直接调用，由restart决定是否切换进程
 // void context_switch(PROCESS* nextProc);
 context_switch:
     movl    4(%esp), %eax
@@ -85,6 +85,7 @@ context_switch:
 // 恢复进程
 // void restart();
 restart:
+    cli
     addl    $4, %esp
     pop     %gs
     pop     %fs
@@ -92,6 +93,7 @@ restart:
     pop     %ds
     popal
     addl    $8, %esp
+    sti
     iret
 
 // 加载tss
