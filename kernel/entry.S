@@ -4,6 +4,7 @@
 
 .extern     gdt_ptr
 .extern     idt_ptr
+.extern     nRenter
 
 .extern     sys_call_handler
 .extern     proc_table
@@ -31,6 +32,7 @@
 #define  V2P_(vaddr)   (vaddr+K_P_BASE_ADDR-K_V_BASE_ADDR)
 #define  exception_with_errorcode(ex_code)   \
     cli;                    \
+    incl    (nRenter);      \
     call    saveregs;       \
     sti;                    \
     movl    %esp, %ebp;     \
@@ -48,6 +50,7 @@
 
 #define  irq_master(irq_code)       \
     cli;                    \
+    incl    (nRenter);      \
     pushl   $0;             \
     call    saveregs;       \
     pushl   $irq_code;      \
@@ -61,6 +64,7 @@
 
 #define  irq_slave(irq_code)        \
     cli;                    \
+    incl    (nRenter);      \
     pushl   $0;             \
     call    saveregs;       \
     pushl   $irq_code;      \
@@ -112,6 +116,7 @@ Ks:
     call    init_proctable
     addl    $12, %esp
 
+    incl    (nRenter)
     pushl   $(proc_table+0x106c)
     call    context_switch
 
@@ -255,6 +260,7 @@ hwint15:
 sys_call_entry:
     // 填充对系统调用中无用的errorcode
     cli
+    incl    (nRenter)
     pushl   $0
     call    saveregs
     sti
