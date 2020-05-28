@@ -24,9 +24,14 @@ EXTERN	GATE		idt[IDT_SIZE];
 // 当前显示的行数
 EXTERN	u32		    dis_pos;
 
-//
+// 进程表
 EXTERN	PROCESS	    proc_table[NR_TASKS];
 EXTERN  PROCESS*    cur_proc;
+EXTERN  int         iCurProc;
+// 记录当前线程所剩余的时间片大小
+EXTERN  int         n_timeSlice;
+// 控制是否切换进程
+EXTERN  int         b_SwitchProc;
 
 //
 EXTERN	TSS	        proc_tss;

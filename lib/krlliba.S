@@ -27,6 +27,7 @@
 .global     load_tss
 .global     load_ldt
 .global     context_switch
+.global     b_SwitchProc
 
 // 向端口中写入字节
 // void out_byte(u16 port, u8 b_byte)
@@ -71,6 +72,7 @@ saveregs:
 // 切换进程,不会直接调用，由restart决定是否切换进程
 // void context_switch(PROCESS* nextProc);
 context_switch:
+    movl    $0, (b_SwitchProc)
     movl    4(%esp), %eax
     movl    %eax, (cur_proc)
     addl    $N_4K, %eax
@@ -87,6 +89,11 @@ context_switch:
 // void restart();
 restart:
     cli
+    cmpl    $1, (b_SwitchProc)
+    jne     .1
+    pushl   (cur_proc)
+    call    context_switch
+.1:
     addl    $4, %esp
     pop     %gs
     pop     %fs
