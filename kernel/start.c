@@ -21,7 +21,7 @@ PUBLIC	void	cstart(){
 	// 并且打开中断
 	__asm__(
 		"lidt	(%0);"
-		"sti;":
+		"cli;":
 		:
 		"m"(idt_ptr):
 	);
@@ -36,8 +36,8 @@ PUBLIC	void	cstart(){
 	nRenter	= 0;
 
 	// 初始化
-	cur_proc = NULL;
-	iCurProc = -1;
+	cur_proc = proc_table;
+	iCurProc = 0;
 	// 控制进程切换
 	b_SwitchProc = 0;
 	// 初始化时间片

@@ -7,6 +7,8 @@
 .extern     proc_table
 .extern     cur_proc
 .extern     nRenter
+.extern     n_timeSlice
+.extern     b_SwitchProc
 
 
 .extern     set_TSS_stack_ring0
@@ -27,7 +29,6 @@
 .global     load_tss
 .global     load_ldt
 .global     context_switch
-.global     b_SwitchProc
 
 // 向端口中写入字节
 // void out_byte(u16 port, u8 b_byte)
@@ -73,6 +74,7 @@ saveregs:
 // void context_switch(PROCESS* nextProc);
 context_switch:
     movl    $0, (b_SwitchProc)
+    movl    $TIMESLICE, (n_timeSlice)
     movl    4(%esp), %eax
     movl    %eax, (cur_proc)
     addl    $N_4K, %eax
@@ -89,8 +91,8 @@ context_switch:
 // void restart();
 restart:
     cli
-    cmpl    $1, (b_SwitchProc)
-    jne     .1
+    cmpl    $0, (b_SwitchProc)
+    je      .1
     pushl   (cur_proc)
     call    context_switch
 .1:

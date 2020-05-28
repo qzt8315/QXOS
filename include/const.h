@@ -70,4 +70,7 @@
 #define CGA_LINES       25
 #define CGA_CHARS_LINE  80
 
+// 定义时间片大小 一个时钟周期调度一次
+#define TIMESLICE       1
+
 #endif

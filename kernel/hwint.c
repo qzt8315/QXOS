@@ -32,6 +32,17 @@ void hwint_handler_clock(){
 	// 减少中断处理时间
 	// display_str_colorful("*", black<<4 | light_gray);
     ticks++;
+	n_timeSlice--;
+	if(n_timeSlice <=0){
+		b_SwitchProc = 1;
+		if(iCurProc == 0){
+			iCurProc = 1;
+			cur_proc = &proc_table[1];
+		}else{
+			iCurProc = 0;
+			cur_proc = &proc_table[0];
+		}
+	}
 }
 
 

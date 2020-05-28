@@ -115,9 +115,11 @@ Ks:
     pushl   $(proc_table+0x106c)
     call    init_proctable
     addl    $12, %esp
+    //
+    sti;
 
     incl    (nRenter)
-    pushl   $(proc_table+0x106c)
+    pushl   $proc_table
     call    context_switch
 
 
