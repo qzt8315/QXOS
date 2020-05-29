@@ -13,7 +13,7 @@ void	TestA(){
 	while(1){
 		a = get_ticks();
 		display_str_colorful("A", black<<4 | white);
-		delay_ms(10);
+		delay_ms(100);
 	}
 }
 
@@ -22,6 +22,6 @@ void	TestB(){
 	while(1){
 		a = get_ticks();
 		display_str_colorful("B", black<<4 | brown);
-		delay_ms(80);
+		delay_ms(800);
 	}
 }
