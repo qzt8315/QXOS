@@ -41,6 +41,7 @@ void hwint_handler_clock(){
 				b_SwitchProc = 1;
 				iCurProc = index;
 				cur_proc = &proc_table[index];
+				return;
 			}
 		}
 	}
