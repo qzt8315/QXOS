@@ -115,7 +115,7 @@ Ks:
     pushl   $(proc_table+0x106c)
     call    init_proctable
     addl    $12, %esp
-    //
+    // 打开中断
     sti;
 
     incl    (nRenter)
