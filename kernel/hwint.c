@@ -34,13 +34,14 @@ void hwint_handler_clock(){
     ticks++;
 	n_timeSlice--;
 	if(n_timeSlice <=0){
-		b_SwitchProc = 1;
-		if(iCurProc == 0){
-			iCurProc = 1;
-			cur_proc = &proc_table[1];
-		}else{
-			iCurProc = 0;
-			cur_proc = &proc_table[0];
+		int	i;
+		for(i=1; i<NR_TASKS; i++){
+			int index = (iCurProc+i)%NR_TASKS;
+			if(proc_table[index].status == s_running){
+				b_SwitchProc = 1;
+				iCurProc = index;
+				cur_proc = &proc_table[index];
+			}
 		}
 	}
 }
@@ -50,6 +51,6 @@ void hwint_handler_clock(){
 void init_8253(){
 	u16 counter0 = (u16)(FREQUENCE_8253/(1000/COLOCK_DUR));
 	out_byte(_8253_MODE_PORT, _8253_WRITE_COUNTER0);
-	out_byte(_8253_COUNTER0_PORT, (u8)(counter0&&0x00ff));
-	out_byte(_8253_COUNTER0_PORT, (u8)((counter0>>8)&&0x00ff));
+	out_byte(_8253_COUNTER0_PORT, (u8)(counter0&0x00ff));
+	out_byte(_8253_COUNTER0_PORT, (u8)((counter0>>8)&0x00ff));
 }

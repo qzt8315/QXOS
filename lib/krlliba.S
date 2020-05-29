@@ -76,7 +76,6 @@ context_switch:
     movl    $0, (b_SwitchProc)
     movl    $TIMESLICE, (n_timeSlice)
     movl    4(%esp), %eax
-    movl    %eax, (cur_proc)
     addl    $N_4K, %eax
     movl    %eax, %esp
     addl    $76, %eax

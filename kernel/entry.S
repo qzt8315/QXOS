@@ -116,11 +116,9 @@ Ks:
     call    init_proctable
     addl    $12, %esp
     // 打开中断
-    sti;
-
-    incl    (nRenter)
-    pushl   $proc_table
-    call    context_switch
+    sti
+    // 等待调度
+    hlt
 
 
 
