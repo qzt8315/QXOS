@@ -73,8 +73,11 @@ saveregs:
 // 切换进程,不会直接调用，由restart决定是否切换进程
 // void context_switch(PROCESS* nextProc);
 context_switch:
+    //  转换进程调度状态
     movl    $0, (b_SwitchProc)
+    //  设置时间片
     movl    $TIMESLICE, (n_timeSlice)
+    //  设置TSS
     movl    4(%esp), %eax
     addl    $N_4K, %eax
     movl    %eax, %esp
@@ -82,7 +85,13 @@ context_switch:
     pushl   %eax
     pushl   $0x10
     call    set_TSS_stack_ring0
-    addl    $8, %esp
+    addl    $4, %esp
+    //  设置cr3
+    popl    %esi
+    addl    $8, %esi
+    movl    (%esi), %eax
+    movl    %eax, %cr3
+    //  跳转到进程运行
     call    restart
 
 

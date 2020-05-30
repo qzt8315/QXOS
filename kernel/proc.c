@@ -70,6 +70,8 @@ PUBLIC  PROCESS*    init_proctable(PROCESS* p_proctab, void* pEnter, void* pStac
     p_proctab->regs.es      = Selector_User_Data;
     p_proctab->regs.fs      = Selector_User_Data;
     p_proctab->regs.gs      = Selector_User_Data;
+    // 设置pde
+    p_proctab->pde          = (u32)pPDETable;
     // IOPL = 1;IF=1(响应可屏蔽中断);
     p_proctab->regs.eflags  = 0x1202;
     // 设置进程状态
